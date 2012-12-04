@@ -3,13 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Node-orm2 by dresende</title>
+    <title>Object Relational Mapping by dresende</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -17,9 +15,12 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1>Node-orm2</h1>
-        <p>Object Relational Mapping v2</p>
+        <h1>Object Relational Mapping</h1>
+        <p>For NodeJS</p>
+
         <p class="view"><a href="https://github.com/dresende/node-orm2">View the Project on GitHub <small>dresende/node-orm2</small></a></p>
+
+
         <ul>
           <li><a href="https://github.com/dresende/node-orm2/zipball/master">Download <strong>ZIP File</strong></a></li>
           <li><a href="https://github.com/dresende/node-orm2/tarball/master">Download <strong>TAR Ball</strong></a></li>
@@ -27,39 +28,99 @@
         </ul>
       </header>
       <section>
-        <h3>Welcome to GitHub Pages.</h3>
+        <h2>Install <a href="http://travis-ci.org/dresende/node-orm2"><img src="https://secure.travis-ci.org/dresende/node-orm2.png" alt="Build Status"></a>
+</h2>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<div class="highlight"><pre>npm install orm@2.0.0-alpha3
+</pre></div>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+<p>Despite the alpha tag, this is the recommended version for new applications.</p>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<h2>DBMS Support</h2>
 
-<h3>Designer Templates</h3>
+<ul>
+<li>MySQL</li>
+<li>PostgreSQL</li>
+<li>SQLite</li>
+</ul><h2>Introduction</h2>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<p>This is a node.js object relational mapping module.</p>
 
-<h3>Rather Drive Stick?</h3>
+<p>Here is an example on how to use it:</p>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">orm</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'orm'</span><span class="p">);</span>
 
-<h3>Authors and Contributors</h3>
+<span class="nx">orm</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s2">"mysql://username:password@host/database"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+    <span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
+        <span class="nx">name</span>      <span class="o">:</span> <span class="nb">String</span><span class="p">,</span>
+        <span class="nx">surname</span>   <span class="o">:</span> <span class="nb">String</span><span class="p">,</span>
+        <span class="nx">age</span>       <span class="o">:</span> <span class="nb">Number</span><span class="p">,</span>
+        <span class="nx">male</span>      <span class="o">:</span> <span class="nb">Boolean</span><span class="p">,</span>
+        <span class="nx">continent</span> <span class="o">:</span> <span class="p">[</span> <span class="s1">'Europe'</span><span class="p">,</span> <span class="s1">'America'</span><span class="p">,</span> <span class="s1">'Asia'</span><span class="p">,</span> <span class="s1">'Africa'</span><span class="p">,</span> <span class="s1">'Australia'</span><span class="p">,</span> <span class="s1">'Antartica'</span> <span class="p">],</span> <span class="c1">// ENUM type</span>
+        <span class="nx">photo</span>     <span class="o">:</span> <span class="nx">Buffer</span><span class="p">,</span> <span class="c1">// BLOB/BINARY</span>
+        <span class="nx">data</span>      <span class="o">:</span> <span class="nb">Object</span> <span class="c1">// JSON encoded</span>
+    <span class="p">});</span>
 
-<h3>Support or Contact</h3>
+    <span class="nx">Person</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="nx">surname</span><span class="o">:</span> <span class="s2">"Doe"</span> <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">people</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// SQL: "SELECT * FROM person WHERE surname = 'Doe'"</span>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"People found: %d"</span><span class="p">,</span> <span class="nx">people</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"First person: %s"</span><span class="p">,</span> <span class="nx">people</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">name</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h2>Models</h2>
+
+<p>A Model is a structure binded to one or more tables, depending on the associations. The model name is assumed to be the table name. After defining a model you can use it to manipulate the table.</p>
+
+<h2>Associations</h2>
+
+<p>An association is a relation between one or more tables.</p>
+
+<h2>hasOne vs. hasMany Associations</h2>
+
+<p>If you have a relation of 1 to 0 or 1 to 1, you should use <code>hasOne</code> association. This assumes a column in the model that has the id of the other end of the relation.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
+<span class="p">});</span>
+<span class="kd">var</span> <span class="nx">Animal</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'animal'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
+<span class="p">});</span>
+<span class="nx">Animal</span><span class="p">.</span><span class="nx">hasOne</span><span class="p">(</span><span class="s2">"owner"</span><span class="p">,</span> <span class="nx">Person</span><span class="p">);</span> <span class="c1">// assumes column 'owner_id' in 'animal' table</span>
+
+<span class="c1">// get animal with id = 123</span>
+<span class="nx">Animal</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">Foo</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Foo is the animal model instance, if found</span>
+    <span class="nx">Foo</span><span class="p">.</span><span class="nx">getOwner</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">John</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// if Foo animal has really an owner, John points to it</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>For relations of 1 to many you have to use <code>hasMany</code> associations. This assumes another table that has 2 columns, one for each table in the association.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
+<span class="p">});</span>
+<span class="nx">Person</span><span class="p">.</span><span class="nx">hasMany</span><span class="p">(</span><span class="s2">"friends"</span><span class="p">);</span> <span class="c1">// omitting the other Model, it will assume self model</span>
+
+<span class="nx">Person</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">John</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">Person</span><span class="p">.</span><span class="nx">getFriends</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">friends</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// assumes table person_friends with columns person_id and friends_id</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
       </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/dresende">dresende</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
     </div>
-    <footer>
-      <p>Project maintained by <a href="https://github.com/dresende">dresende</a></p>
-      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
-    </footer>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="javascripts/scale.fix.js"></script>
               <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
