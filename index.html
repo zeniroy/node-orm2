@@ -7,9 +7,7 @@
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -19,7 +17,10 @@
       <header>
         <h1>Object Relational Mapping</h1>
         <p>For NodeJS</p>
+
         <p class="view"><a href="https://github.com/dresende/node-orm2">View the Project on GitHub <small>dresende/node-orm2</small></a></p>
+
+
         <ul>
           <li><a href="https://github.com/dresende/node-orm2/zipball/master">Download <strong>ZIP File</strong></a></li>
           <li><a href="https://github.com/dresende/node-orm2/tarball/master">Download <strong>TAR Ball</strong></a></li>
@@ -60,13 +61,27 @@
         <span class="nx">continent</span> <span class="o">:</span> <span class="p">[</span> <span class="s1">'Europe'</span><span class="p">,</span> <span class="s1">'America'</span><span class="p">,</span> <span class="s1">'Asia'</span><span class="p">,</span> <span class="s1">'Africa'</span><span class="p">,</span> <span class="s1">'Australia'</span><span class="p">,</span> <span class="s1">'Antartica'</span> <span class="p">],</span> <span class="c1">// ENUM type</span>
         <span class="nx">photo</span>     <span class="o">:</span> <span class="nx">Buffer</span><span class="p">,</span> <span class="c1">// BLOB/BINARY</span>
         <span class="nx">data</span>      <span class="o">:</span> <span class="nb">Object</span> <span class="c1">// JSON encoded</span>
+    <span class="p">},</span> <span class="p">{</span>
+        <span class="nx">methods</span><span class="o">:</span> <span class="p">{</span>
+            <span class="nx">fullName</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s1">' '</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">surname</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="nx">validations</span><span class="o">:</span> <span class="p">{</span>
+            <span class="nx">age</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">validators</span><span class="p">.</span><span class="nx">rangeNumber</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">,</span> <span class="s1">'under-age'</span><span class="p">)</span>
+        <span class="p">}</span>
     <span class="p">});</span>
 
     <span class="nx">Person</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="nx">surname</span><span class="o">:</span> <span class="s2">"Doe"</span> <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">people</span><span class="p">)</span> <span class="p">{</span>
         <span class="c1">// SQL: "SELECT * FROM person WHERE surname = 'Doe'"</span>
 
         <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"People found: %d"</span><span class="p">,</span> <span class="nx">people</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"First person: %s"</span><span class="p">,</span> <span class="nx">people</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">name</span><span class="p">);</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"First person: %s, age %d"</span><span class="p">,</span> <span class="nx">people</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">fullName</span><span class="p">(),</span> <span class="nx">people</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">age</span><span class="p">);</span>
+
+        <span class="nx">people</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">age</span> <span class="o">=</span> <span class="mi">16</span><span class="p">;</span>
+        <span class="nx">people</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">save</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// err.msg = 'under-age';</span>
+        <span class="p">});</span>
     <span class="p">});</span>
 <span class="p">});</span>
 </pre></div>
@@ -153,12 +168,12 @@ first one is for conditions (although it can be empty) and the second one is for
 <span class="p">});</span>
 </pre></div>
       </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/dresende">dresende</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
     </div>
-    <footer>
-      <p>Project maintained by <a href="https://github.com/dresende">dresende</a></p>
-      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
-    </footer>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="javascripts/scale.fix.js"></script>
               <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
