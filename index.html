@@ -7,7 +7,9 @@
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -17,10 +19,7 @@
       <header>
         <h1>Object Relational Mapping</h1>
         <p>For NodeJS</p>
-
         <p class="view"><a href="https://github.com/dresende/node-orm2">View the Project on GitHub <small>dresende/node-orm2</small></a></p>
-
-
         <ul>
           <li><a href="https://github.com/dresende/node-orm2/zipball/master">Download <strong>ZIP File</strong></a></li>
           <li><a href="https://github.com/dresende/node-orm2/tarball/master">Download <strong>TAR Ball</strong></a></li>
@@ -90,19 +89,25 @@
 
 <p>A Model is a structure binded to one or more tables, depending on the associations. The model name is assumed to be the table name. After defining a model you can use it to manipulate the table.</p>
 
-<h2>Finding Items</h2>
-
 <p>After defining a Model you can get a specific element or find one or more based on some conditions.</p>
 
-<div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">"John"</span><span class="p">,</span> <span class="nx">surname</span><span class="o">:</span> <span class="s2">"Doe"</span> <span class="p">},</span> <span class="mi">3</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">people</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// finds people with name='John' AND surname='Doe' and returns the first 3</span>
-<span class="p">});</span>
-</pre></div>
+<h2>Finding Items</h2>
 
-<p>Or if you know the ID of the item (called Instance):</p>
+<h3>Model.get(id, [ options ], cb)</h3>
+
+<p>To get a specific element from the database use <code>Model.get</code>.</p>
 
 <div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">person</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// finds person with id = 123</span>
+<span class="p">});</span>
+</pre></div>
+
+<h3>Model.find([ conditions ] [, options ] [, limit ] [, order ] [, cb ])</h3>
+
+<p>Finding one or more elements has more options, each one can be given in no specific parameter order. Only <code>options</code> has to be after <code>conditions</code> (even if it's an empty object).</p>
+
+<div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">"John"</span><span class="p">,</span> <span class="nx">surname</span><span class="o">:</span> <span class="s2">"Doe"</span> <span class="p">},</span> <span class="mi">3</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">people</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// finds people with name='John' AND surname='Doe' and returns the first 3</span>
 <span class="p">});</span>
 </pre></div>
 
@@ -117,17 +122,31 @@
 <span class="p">});</span>
 </pre></div>
 
-<p>There are more options that you can pass to find something. These options are passed in a second
-object:</p>
+<p>There are more options that you can pass to find something. These options are passed in a second object:</p>
 
 <div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="nx">surname</span><span class="o">:</span> <span class="s2">"Doe"</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">offset</span><span class="o">:</span> <span class="mi">2</span> <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">people</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// finds people with surname='Doe', skips the first 2 and returns the others</span>
 <span class="p">});</span>
 </pre></div>
 
-<p>The order of the parameters is not fixed. You can pass the callback first if you like or mix the
-other paramenters. The only parameter that needs to be in order is when you pass 2 objects. The
-first one is for conditions (although it can be empty) and the second one is for options.</p>
+<h4>Available options</h4>
+
+<ul>
+<li>
+<code>offset</code>: discards the first <code>N</code> elements</li>
+<li>
+<code>limit</code>: although it can be passed as a direct argument, you can use it here if you prefer</li>
+<li>
+<code>only</code>: if you don't want all properties, you can give an array with the list of properties you want</li>
+</ul><h4>Chaining</h4>
+
+<p>If you prefer another less complicated syntax you can chain <code>.find()</code> by not giving a callback parameter.</p>
+
+<pre><code>Person.find({ surname: "Doe" }).limit(3).offset(2).only("name", "surname").run(function (err, people) {
+    // finds people with surname='Doe', skips first 2 and limits to 3 elements,
+    // returning only 'name' and 'surname' properties
+});
+</code></pre>
 
 <h2>Associations</h2>
 
@@ -168,12 +187,12 @@ first one is for conditions (although it can be empty) and the second one is for
 <span class="p">});</span>
 </pre></div>
       </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/dresende">dresende</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
     </div>
-    <script src="javascripts/scale.fix.js"></script>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/dresende">dresende</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
               <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
