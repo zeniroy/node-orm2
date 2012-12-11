@@ -142,11 +142,11 @@
 
 <p>If you prefer another less complicated syntax you can chain <code>.find()</code> by not giving a callback parameter.</p>
 
-<pre><code>Person.find({ surname: "Doe" }).limit(3).offset(2).only("name", "surname").run(function (err, people) {
-    // finds people with surname='Doe', skips first 2 and limits to 3 elements,
-    // returning only 'name' and 'surname' properties
-});
-</code></pre>
+<div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="nx">surname</span><span class="o">:</span> <span class="s2">"Doe"</span> <span class="p">}).</span><span class="nx">limit</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nx">offset</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nx">only</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="s2">"surname"</span><span class="p">).</span><span class="nx">run</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">people</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// finds people with surname='Doe', skips first 2 and limits to 3 elements,</span>
+    <span class="c1">// returning only 'name' and 'surname' properties</span>
+<span class="p">});</span>
+</pre></div>
 
 <h2>Associations</h2>
 
