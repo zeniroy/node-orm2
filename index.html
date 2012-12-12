@@ -30,7 +30,7 @@
         <h2>Install <a href="http://travis-ci.org/dresende/node-orm2"><img src="https://secure.travis-ci.org/dresende/node-orm2.png" alt="Build Status"></a>
 </h2>
 
-<div class="highlight"><pre>npm install orm@2.0.0-alpha5
+<div class="highlight"><pre>npm install orm@2.0.0-alpha6
 </pre></div>
 
 <p>Despite the alpha tag, this is the recommended version for new applications.</p>
@@ -181,9 +181,54 @@
 <span class="nx">Person</span><span class="p">.</span><span class="nx">hasMany</span><span class="p">(</span><span class="s2">"friends"</span><span class="p">);</span> <span class="c1">// omitting the other Model, it will assume self model</span>
 
 <span class="nx">Person</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">John</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">Person</span><span class="p">.</span><span class="nx">getFriends</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">friends</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">John</span><span class="p">.</span><span class="nx">getFriends</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">friends</span><span class="p">)</span> <span class="p">{</span>
         <span class="c1">// assumes table person_friends with columns person_id and friends_id</span>
     <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>The <code>hasMany</code> associations can have additional properties that are assumed to be in the association table.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
+<span class="p">});</span>
+<span class="nx">Person</span><span class="p">.</span><span class="nx">hasMany</span><span class="p">(</span><span class="s2">"friends"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">rate</span> <span class="o">:</span> <span class="nb">Number</span>
+<span class="p">});</span>
+
+<span class="nx">Person</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">John</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">John</span><span class="p">.</span><span class="nx">getFriends</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">friends</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// assumes rate is another column on table person_friends</span>
+        <span class="c1">// you can access it by going to friends[N].extra.rate</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>If you prefer you can activate <code>autoFetch</code>. This way associations are automatically fetched when you get or find instances of a model.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
+<span class="p">});</span>
+<span class="nx">Person</span><span class="p">.</span><span class="nx">hasMany</span><span class="p">(</span><span class="s2">"friends"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">rate</span> <span class="o">:</span> <span class="nb">Number</span>
+<span class="p">},</span> <span class="p">{</span>
+    <span class="nx">autoFetch</span> <span class="o">:</span> <span class="kc">true</span>
+<span class="p">});</span>
+
+<span class="nx">Person</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">John</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// no need to do John.getFriends() , John already has John.friends Array</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>You can also define this option globally instead of a per association basis.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
+<span class="p">},</span> <span class="p">{</span>
+    <span class="nx">autoFetch</span> <span class="o">:</span> <span class="kc">true</span>
+<span class="p">});</span>
+<span class="nx">Person</span><span class="p">.</span><span class="nx">hasMany</span><span class="p">(</span><span class="s2">"friends"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">rate</span> <span class="o">:</span> <span class="nb">Number</span>
 <span class="p">});</span>
 </pre></div>
       </section>
