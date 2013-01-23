@@ -42,18 +42,13 @@
 <li>MySQL</li>
 <li>PostgreSQL</li>
 <li>SQLite</li>
-</ul><h2>Roadmap (Future updates)</h2>
+</ul><h2>Features</h2>
 
 <ul>
-<li><del>Add SQLite Model.sync()</del></li>
-<li>
-<del>Add options to Property to allow people to better define the type of coluns in the database</del> (_some added_)</li>
-<li><del>Add Model.drop()</del></li>
-<li><del>Add Model.count(), ChainFind.count(), Model.exists(id)</del></li>
-<li><del>Add Instance.has*() for hasMany and hasOne associations</del></li>
-<li><del>Add DB.load() to load definitions from files</del></li>
-<li><del>Add ChainFind.remove() (and maybe some more interesting methods)</del></li>
-<li>Add some kind of bulk insert</li>
+<li>Create Models, sync, drop, bulk create, get, find, remove, count</li>
+<li>Create Model associations, find, check, create and remove</li>
+<li>Define custom validations (several builtin validations, check instance properties before saving)</li>
+<li>Instance singleton (table rows fetched twice are the same object, changes to one change all)</li>
 </ul><h2>Introduction</h2>
 
 <p>This is a node.js object relational mapping module.</p>
