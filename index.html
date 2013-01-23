@@ -51,8 +51,9 @@
 <li><del>Add Model.drop()</del></li>
 <li><del>Add Model.count(), ChainFind.count(), Model.exists(id)</del></li>
 <li><del>Add Instance.has*() for hasMany and hasOne associations</del></li>
-<li>Add DB.import() to load definitions from files</li>
-<li>Add ChainFind.remove() (and maybe some more interesting methods)</li>
+<li><del>Add DB.load() to load definitions from files</del></li>
+<li><del>Add ChainFind.remove() (and maybe some more interesting methods)</del></li>
+<li>Add some kind of bulk insert</li>
 </ul><h2>Introduction</h2>
 
 <p>This is a node.js object relational mapping module.</p>
@@ -116,6 +117,43 @@ need to store a reference to it.</p>
 <span class="p">},</span> <span class="p">{</span>
     <span class="c1">// options (optional)</span>
 <span class="p">});</span>
+</pre></div>
+
+<h2>Loading Models</h2>
+
+<p>If you prefer to have your models defined in separated files, you can define them in a function inside a module and
+export the function has the entire module. You can have cascading loads.</p>
+
+<div class="highlight"><pre><span class="c1">// your main file (after connecting)</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">load</span><span class="p">(</span><span class="s2">"./models"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// loaded!</span>
+    <span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">person</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">Pet</span>    <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">pet</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="c1">// models.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">db</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">db</span><span class="p">.</span><span class="nx">load</span><span class="p">(</span><span class="s2">"./models-extra"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">cb</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
+            <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
+        <span class="p">});</span>
+
+        <span class="k">return</span> <span class="nx">cb</span><span class="p">();</span>
+    <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="c1">// models-extra.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">db</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'pet'</span><span class="p">,</span> <span class="p">{</span>
+        <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
+    <span class="p">});</span>
+
+    <span class="k">return</span> <span class="nx">cb</span><span class="p">();</span>
+<span class="p">};</span>
 </pre></div>
 
 <h2>Synching Models</h2>
@@ -219,6 +257,13 @@ of them and counting. This will actually tell the database server to do a count,
 
 <div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="nx">surname</span><span class="o">:</span> <span class="s2">"Doe"</span> <span class="p">}).</span><span class="nx">count</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">people</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// people = number of people with surname="Doe"</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>Also available is the option to remove the selected items.</p>
+
+<div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="nx">surname</span><span class="o">:</span> <span class="s2">"Doe"</span> <span class="p">}).</span><span class="nx">remove</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Does gone..</span>
 <span class="p">});</span>
 </pre></div>
 
