@@ -46,10 +46,11 @@
 
 <ul>
 <li><del>Add SQLite Model.sync()</del></li>
-<li>Add options to Property to allow people to better define the type of coluns in the database</li>
+<li>
+<del>Add options to Property to allow people to better define the type of coluns in the database</del> (_some added_)</li>
 <li><del>Add Model.drop()</del></li>
-<li>Add Model.count(), Model.exists(id)</li>
-<li>Add Instance.has*() for hasMany and hasOne associations</li>
+<li><del>Add Model.count(), ChainFind.count(), Model.exists(id)</del></li>
+<li><del>Add Instance.has*() for hasMany and hasOne associations</del></li>
 <li>Add DB.import() to load definitions from files</li>
 <li>Add ChainFind.remove() (and maybe some more interesting methods)</li>
 </ul><h2>Introduction</h2>
@@ -102,6 +103,42 @@
 
 <p>After defining a Model you can get a specific element or find one or more based on some conditions.</p>
 
+<h2>Defining Models</h2>
+
+<p>To define a model, you use the reference to the database connection and call <code>define</code>. The function will define a Model
+and will return it to you. You can get it later by it's id directly from the database connection so you don't actually
+need to store a reference to it.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>        <span class="c1">// 'person' will be the table in the database as well as the model id</span>
+    <span class="c1">// properties</span>
+    <span class="nx">name</span>    <span class="o">:</span> <span class="nb">String</span><span class="p">,</span>                     <span class="c1">// you can use native objects to define the property type</span>
+    <span class="nx">surname</span> <span class="o">:</span> <span class="p">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s2">"text"</span><span class="p">,</span> <span class="nx">size</span><span class="o">:</span> <span class="mi">50</span> <span class="p">}</span>  <span class="c1">// or you can be specific and define aditional options</span>
+<span class="p">},</span> <span class="p">{</span>
+    <span class="c1">// options (optional)</span>
+<span class="p">});</span>
+</pre></div>
+
+<h2>Synching Models</h2>
+
+<p>If you don't have the tables on the database you have to call the <code>.sync()</code> on every Model. This will just create the
+tables necessary for your Model. If you have more than one Model you can call <code>.sync()</code> directly on the database
+connection to syncronize all Models.</p>
+
+<div class="highlight"><pre><span class="c1">// db.sync() can also be used</span>
+<span class="nx">Person</span><span class="p">.</span><span class="nx">sync</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="o">!</span><span class="nx">err</span> <span class="o">&amp;&amp;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"done!"</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<h2>Dropping Models</h2>
+
+<p>If you want to drop a Model and remove all tables you can use the <code>.drop()</code> method.</p>
+
+<div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">drop</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="o">!</span><span class="nx">err</span> <span class="o">&amp;&amp;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"person model no longer exists!"</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
 <h2>Finding Items</h2>
 
 <h3>Model.get(id, [ options ], cb)</h3>
@@ -140,6 +177,25 @@
 <span class="p">});</span>
 </pre></div>
 
+<h3>Model.count([ conditions, ] cb)</h3>
+
+<p>If you just want to count the number of items that match a condition you can just use <code>.count()</code> instead of finding all
+of them and counting. This will actually tell the database server to do a count, the count is not done in javascript.</p>
+
+<div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">count</span><span class="p">({</span> <span class="nx">surname</span><span class="o">:</span> <span class="s2">"Doe"</span> <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">count</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"We have %d Does in our db"</span><span class="p">,</span> <span class="nx">count</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<h3>Model.exists([ conditions, ] cb)</h3>
+
+<p>Similar to <code>.count()</code>, this method just checks if the count is greater than zero or not.</p>
+
+<div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">exists</span><span class="p">({</span> <span class="nx">surname</span><span class="o">:</span> <span class="s2">"Doe"</span> <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">exists</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"We %s Does in our db"</span><span class="p">,</span> <span class="nx">exists</span> <span class="o">?</span> <span class="s2">"have"</span> <span class="o">:</span> <span class="s2">"don't have"</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
 <h4>Available options</h4>
 
 <ul>
@@ -159,6 +215,13 @@
 <span class="p">});</span>
 </pre></div>
 
+<p>You can also chain and just get the count in the end. In this case, offset, limit and order are ignored.</p>
+
+<div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="nx">surname</span><span class="o">:</span> <span class="s2">"Doe"</span> <span class="p">}).</span><span class="nx">count</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">people</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// people = number of people with surname="Doe"</span>
+<span class="p">});</span>
+</pre></div>
+
 <h4>Conditions</h4>
 
 <p>Conditions are defined as an object where every key is a property (table column). All keys are supposed
@@ -172,8 +235,12 @@ an <code>Array</code>. In this case it is considered a list to compare the prope
 <p>If you need other comparisons, you have to use a special object created by some helper functions. Here are
 a few examples to describe it:</p>
 
-<div class="highlight"><pre><span class="p">{</span> <span class="nx">col1</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">ne</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span> <span class="p">}</span> <span class="c1">// `col1` &lt;&gt; 123</span>
+<div class="highlight"><pre><span class="p">{</span> <span class="nx">col1</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">eq</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span> <span class="p">}</span> <span class="c1">// `col1` = 123 (default)</span>
+<span class="p">{</span> <span class="nx">col1</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">ne</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span> <span class="p">}</span> <span class="c1">// `col1` &lt;&gt; 123</span>
+<span class="p">{</span> <span class="nx">col1</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">gt</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span> <span class="p">}</span> <span class="c1">// `col1` &gt; 123</span>
 <span class="p">{</span> <span class="nx">col1</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">gte</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span> <span class="p">}</span> <span class="c1">// `col1` &gt;= 123</span>
+<span class="p">{</span> <span class="nx">col1</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">lt</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span> <span class="p">}</span> <span class="c1">// `col1` &lt; 123</span>
+<span class="p">{</span> <span class="nx">col1</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">lte</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span> <span class="p">}</span> <span class="c1">// `col1` &lt;= 123</span>
 <span class="p">{</span> <span class="nx">col1</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">between</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="mi">456</span><span class="p">)</span> <span class="p">}</span> <span class="c1">// `col1` BETWEEN 123 AND 456</span>
 </pre></div>
 
