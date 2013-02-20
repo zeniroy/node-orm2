@@ -31,7 +31,7 @@
         <h2>Install <a href="http://travis-ci.org/dresende/node-orm2"><img src="https://secure.travis-ci.org/dresende/node-orm2.png" alt="Build Status"></a>
 </h2>
 
-<div class="highlight"><pre>npm install orm@2.0.0-alpha9
+<div class="highlight"><pre>npm install orm@2.0.0-alpha10
 </pre></div>
 
 <p>Despite the alpha tag, this is the recommended version for new applications.</p>
@@ -55,17 +55,17 @@
 
 <p>Here is an example on how to use it:</p>
 
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">orm</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'orm'</span><span class="p">);</span>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">orm</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"orm"</span><span class="p">);</span>
 
 <span class="nx">orm</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s2">"mysql://username:password@host/database"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
 
-    <span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s2">"person"</span><span class="p">,</span> <span class="p">{</span>
         <span class="nx">name</span>      <span class="o">:</span> <span class="nb">String</span><span class="p">,</span>
         <span class="nx">surname</span>   <span class="o">:</span> <span class="nb">String</span><span class="p">,</span>
         <span class="nx">age</span>       <span class="o">:</span> <span class="nb">Number</span><span class="p">,</span>
         <span class="nx">male</span>      <span class="o">:</span> <span class="nb">Boolean</span><span class="p">,</span>
-        <span class="nx">continent</span> <span class="o">:</span> <span class="p">[</span> <span class="s1">'Europe'</span><span class="p">,</span> <span class="s1">'America'</span><span class="p">,</span> <span class="s1">'Asia'</span><span class="p">,</span> <span class="s1">'Africa'</span><span class="p">,</span> <span class="s1">'Australia'</span><span class="p">,</span> <span class="s1">'Antartica'</span> <span class="p">],</span> <span class="c1">// ENUM type</span>
+        <span class="nx">continent</span> <span class="o">:</span> <span class="p">[</span> <span class="s2">"Europe"</span><span class="p">,</span> <span class="s2">"America"</span><span class="p">,</span> <span class="s2">"Asia"</span><span class="p">,</span> <span class="s2">"Africa"</span><span class="p">,</span> <span class="s2">"Australia"</span><span class="p">,</span> <span class="s2">"Antartica"</span> <span class="p">],</span> <span class="c1">// ENUM type</span>
         <span class="nx">photo</span>     <span class="o">:</span> <span class="nx">Buffer</span><span class="p">,</span> <span class="c1">// BLOB/BINARY</span>
         <span class="nx">data</span>      <span class="o">:</span> <span class="nb">Object</span> <span class="c1">// JSON encoded</span>
     <span class="p">},</span> <span class="p">{</span>
@@ -75,7 +75,7 @@
             <span class="p">}</span>
         <span class="p">},</span>
         <span class="nx">validations</span><span class="o">:</span> <span class="p">{</span>
-            <span class="nx">age</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">validators</span><span class="p">.</span><span class="nx">rangeNumber</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">,</span> <span class="s1">'under-age'</span><span class="p">)</span>
+            <span class="nx">age</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">validators</span><span class="p">.</span><span class="nx">rangeNumber</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">,</span> <span class="s2">"under-age"</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">});</span>
 
@@ -87,9 +87,26 @@
 
         <span class="nx">people</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">age</span> <span class="o">=</span> <span class="mi">16</span><span class="p">;</span>
         <span class="nx">people</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">save</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-            <span class="c1">// err.msg = 'under-age';</span>
+            <span class="c1">// err.msg = "under-age";</span>
         <span class="p">});</span>
     <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h2>Settings</h2>
+
+<p>You have a global settings object and one for each connection.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">orm</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"orm"</span><span class="p">);</span>
+
+<span class="nx">orm</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"some.deep.value"</span><span class="p">,</span> <span class="mi">123</span><span class="p">);</span>
+
+<span class="nx">orm</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s2">"...."</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// db.settings is a snapshot of the settings at the moment</span>
+    <span class="c1">// of orm.connect(). changes to it don't affect orm.settings</span>
+
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">db</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"some.deep.value"</span><span class="p">));</span> <span class="c1">// 123</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">db</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"some.deep"</span><span class="p">));</span>       <span class="c1">// { value: 123 }</span>
 <span class="p">});</span>
 </pre></div>
 
@@ -262,7 +279,40 @@ of them and counting. This will actually tell the database server to do a count,
 <span class="p">});</span>
 </pre></div>
 
-<h4>Conditions</h4>
+<p>You can also make modifications to your instances using common Array traversal methods and save everything
+in the end.</p>
+
+<div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="nx">surname</span><span class="o">:</span> <span class="s2">"Doe"</span> <span class="p">}).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">person</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">person</span><span class="p">.</span><span class="nx">surname</span> <span class="o">=</span> <span class="s2">"Dean"</span><span class="p">;</span>
+<span class="p">}).</span><span class="nx">save</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// done!</span>
+<span class="p">});</span>
+
+<span class="nx">Person</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="nx">surname</span><span class="o">:</span> <span class="s2">"Doe"</span> <span class="p">}).</span><span class="nx">each</span><span class="p">().</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">person</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">person</span><span class="p">.</span><span class="nx">age</span> <span class="o">&gt;=</span> <span class="mi">18</span><span class="p">;</span>
+<span class="p">}).</span><span class="nx">sort</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">person1</span><span class="p">,</span> <span class="nx">person2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">person1</span><span class="p">.</span><span class="nx">age</span> <span class="o">&lt;</span> <span class="nx">person2</span><span class="p">.</span><span class="nx">age</span><span class="p">;</span>
+<span class="p">}).</span><span class="nx">get</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">people</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// get all people with at least 18 years, sorted by age</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>Of course you could do this directly on <code>.find()</code>, but for some more complicated tasks this can be very usefull.</p>
+
+<p><code>Model.find()</code> does not return an Array so you can't just chain directly. To start chaining you have to call
+<code>.each()</code> (with an optional callback if you want to traverse the list). You can then use the common functions
+<code>.filter()</code>, <code>.sort()</code> and <code>.forEach()</code> more than once.</p>
+
+<p>In the end (or during the process..) you can call:</p>
+
+<ul>
+<li>
+<code>.count()</code> if you just want to know how many items there are;</li>
+<li>
+<code>.get()</code> to retrieve the list;</li>
+<li>
+<code>.save()</code> to save all item changes.</li>
+</ul><h4>Conditions</h4>
 
 <p>Conditions are defined as an object where every key is a property (table column). All keys are supposed
 to be concatenated by the logical <code>AND</code>. Values are considered to match exactly, unless you're passing
@@ -365,6 +415,29 @@ a few examples to describe it:</p>
 <span class="p">});</span>
 <span class="nx">Person</span><span class="p">.</span><span class="nx">hasMany</span><span class="p">(</span><span class="s2">"friends"</span><span class="p">,</span> <span class="p">{</span>
     <span class="nx">rate</span> <span class="o">:</span> <span class="nb">Number</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>For <code>hasOne</code> associations you can make calls to the associated Model by using the <code>reverse</code> option. For example,
+if you have an association from ModelA to ModelB, you can create an accessor in ModelB to get instances from ModelA.
+Confusin? Look at the next example.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Pet</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'pet'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
+<span class="p">});</span>
+<span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
+<span class="p">});</span>
+<span class="nx">Pet</span><span class="p">.</span><span class="nx">hasOne</span><span class="p">(</span><span class="s2">"owner"</span><span class="p">,</span> <span class="nx">Person</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">reverse</span> <span class="o">:</span> <span class="s2">"pets"</span>
+<span class="p">});</span>
+
+<span class="nx">Person</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="nx">getPets</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">pets</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// although the association was made on Pet,</span>
+    <span class="c1">// Person will have an accessor (getPets)</span>
+    <span class="c1">//</span>
+    <span class="c1">// In this example, ORM will fetch all pets</span>
+    <span class="c1">// whose owner_id = 4</span>
 <span class="p">});</span>
 </pre></div>
       </section>
