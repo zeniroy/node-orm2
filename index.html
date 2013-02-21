@@ -34,13 +34,14 @@
 <div class="highlight"><pre>npm install orm
 </pre></div>
 
-<p>Despite the alpha tag, this is the recommended version for new applications.</p>
+<p>Current stable version: <strong>2.0.2</strong></p>
 
 <h2>DBMS Support</h2>
 
 <ul>
 <li>MySQL</li>
 <li>PostgreSQL</li>
+<li>Amazon Redshift</li>
 <li>SQLite</li>
 </ul><h2>Features</h2>
 
@@ -188,6 +189,59 @@ connection to syncronize all Models.</p>
     <span class="o">!</span><span class="nx">err</span> <span class="o">&amp;&amp;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"person model no longer exists!"</span><span class="p">);</span>
 <span class="p">});</span>
 </pre></div>
+
+<h2>Advanced Options</h2>
+
+<p>Using <a href="#settings">Settings</a> or directly on Model definition you can tweak some options.
+For example, each Model instance has a unique ID in the database. This table column is
+by default "id" but you can change it.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s2">"person"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
+<span class="p">},</span> <span class="p">{</span>
+    <span class="nx">id</span>   <span class="o">:</span> <span class="s2">"person_id"</span>
+<span class="p">});</span>
+
+<span class="c1">// or just do it globally..</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"properties.primary_key"</span><span class="p">,</span> <span class="s2">"UID"</span><span class="p">);</span>
+
+<span class="c1">// ..and then define your Models</span>
+<span class="kd">var</span> <span class="nx">Pet</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s2">"pet"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
+<span class="p">});</span>
+</pre></div>
+
+<p><strong>Pet</strong> model will have 2 columns, an <code>UID</code> and a <code>name</code>.</p>
+
+<p>Other options:</p>
+
+<ul>
+<li>
+<code>cache</code> : (default: <code>true</code>) Set it to <code>false</code> to disable Instance cache (Singletons) or set a timeout value (in seconds);</li>
+<li>
+<code>autoSave</code> : (default: <code>false</code>) Set it to <code>true</code> to save an Instance right after changing any property;</li>
+<li>
+<code>autoFetch</code> : (default: <code>false</code>) Set it to <code>true</code> to fetch associations when fetching an instance from the database;</li>
+<li>
+<code>autoFetchLimit</code> : (default: <code>1</code>) If <code>autoFetch</code> is enabled this defines how many hoops (associations of associations)
+you want it to automatically fetch.</li>
+</ul><h2>Hooks</h2>
+
+<p>If you want to listen for a type of event than occurs in instances of a Model, you can attach a function that
+will be called when that event happens. There are some events possible:</p>
+
+<ul>
+<li>
+<code>afterLoad</code> : (no parameters) Right after loading and preparing an instance to be used;</li>
+<li>
+<code>beforeSave</code> : (no parameters) Right before trying to save;</li>
+<li>
+<code>afterSave</code> : (bool success) Right after saving;</li>
+<li>
+<code>beforeCreate</code> : (no parameters) Right before trying to save a new instance;</li>
+<li>
+<code>beforeRemove</code> : (no parameters) Right before trying to remove an instance.</li>
+</ul><p>All hook function are called with <code>this</code> as the instance so you can access anything you want related to it.</p>
 
 <h2>Finding Items</h2>
 
