@@ -31,7 +31,7 @@
         <h2>Install <a href="http://travis-ci.org/dresende/node-orm2"><img src="https://secure.travis-ci.org/dresende/node-orm2.png" alt="Build Status"></a>
 </h2>
 
-<div class="highlight"><pre>npm install orm@2.0.0-alpha10
+<div class="highlight"><pre>npm install orm
 </pre></div>
 
 <p>Despite the alpha tag, this is the recommended version for new applications.</p>
@@ -246,7 +246,7 @@ of them and counting. This will actually tell the database server to do a count,
 <span class="p">});</span>
 </pre></div>
 
-<h4>Available options</h4>
+<h3>Available options</h3>
 
 <ul>
 <li>
@@ -334,13 +334,44 @@ a few examples to describe it:</p>
 <span class="p">{</span> <span class="nx">col1</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">between</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="mi">456</span><span class="p">)</span> <span class="p">}</span> <span class="c1">// `col1` BETWEEN 123 AND 456</span>
 </pre></div>
 
+<h3>Singleton</h3>
+
+<p>Each model instances is cached, so if you fetch the same record using 2 or more different queries, you will
+get the same object. If you have other systems that can change your database (or you're developing and need
+to make some manual changes) you should remove this feature by disabling cache. You do this when you're
+defining each Model.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span>    <span class="o">:</span> <span class="nb">String</span>
+<span class="p">},</span> <span class="p">{</span>
+    <span class="nx">cache</span>   <span class="o">:</span> <span class="kc">false</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>If you want singletons but want cache to expire after a period of time, you can pass a number instead of a
+boolean. The number will be considered the cache timeout in seconds (you can use floating point).</p>
+
 <h2>Associations</h2>
 
 <p>An association is a relation between one or more tables.</p>
 
-<h2>hasOne vs. hasMany Associations</h2>
+<h2>hasOne vs. hasMany</h2>
 
-<p>If you have a relation of 1 to 0 or 1 to 1, you should use <code>hasOne</code> association. This assumes a column in the model that has the id of the other end of the relation.</p>
+<p>Since this topic brings some confusion to many people including myself, here's a list of the possibilities
+supported by both types of association.</p>
+
+<ul>
+<li>
+<code>hasOne</code> : it's a <strong>Many-to-One</strong> relationship. A.hasOne(B) means A will have one (or none) of B, but B can be
+associated with many A;</li>
+<li>
+<code>hasMany</code>: it's a <strong>One-to-Many</strong> relationship. A.hasMany(B) means A will have none, one or more of B. Actually
+B will be associated with possibly many A but you don't have how to find it easily (see next);</li>
+<li>
+<code>hasMany</code> + reverse: it's a <strong>Many-to-Many</strong> relationship. A.hasMany(B, { reverse: A }) means A can have none or
+many B and also B can have none or many A. Accessors will be created in both models so you can manage them from
+both sides.</li>
+</ul><p>If you have a relation of 1 to 0 or 1 to 1, you should use <code>hasOne</code> association. This assumes a column in the model that has the id of the other end of the relation.</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
     <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
@@ -358,6 +389,13 @@ a few examples to describe it:</p>
     <span class="p">});</span>
 <span class="p">});</span>
 </pre></div>
+
+<p>If you prefer to use another name for the field (owner_id) you can change this parameter in the settings.</p>
+
+<div class="highlight"><pre><span class="nx">db</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"properties.association_key"</span><span class="p">,</span> <span class="s2">"id_{name}"</span><span class="p">);</span> <span class="c1">// {name} will be replaced by 'owner' in this case</span>
+</pre></div>
+
+<p><strong>Note: This has to be done prior to the association creation.</strong></p>
 
 <p>For relations of 1 to many you have to use <code>hasMany</code> associations. This assumes another table that has 2 columns, one for each table in the association.</p>
 
@@ -418,9 +456,9 @@ a few examples to describe it:</p>
 <span class="p">});</span>
 </pre></div>
 
-<p>For <code>hasOne</code> associations you can make calls to the associated Model by using the <code>reverse</code> option. For example,
-if you have an association from ModelA to ModelB, you can create an accessor in ModelB to get instances from ModelA.
-Confusin? Look at the next example.</p>
+<p>Associations can make calls to the associated Model by using the <code>reverse</code> option. For example, if you have an
+association from ModelA to ModelB, you can create an accessor in ModelB to get instances from ModelA.
+Confusing? Look at the next example.</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Pet</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'pet'</span><span class="p">,</span> <span class="p">{</span>
     <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
@@ -439,6 +477,25 @@ Confusin? Look at the next example.</p>
     <span class="c1">// In this example, ORM will fetch all pets</span>
     <span class="c1">// whose owner_id = 4</span>
 <span class="p">});</span>
+</pre></div>
+
+<p>This makes even more sense when having <code>hasMany</code> associations since you can manage the Many-to-Many associations
+from both sides.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Pet</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'pet'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
+<span class="p">});</span>
+<span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
+<span class="p">});</span>
+<span class="nx">Person</span><span class="p">.</span><span class="nx">hasMany</span><span class="p">(</span><span class="s2">"pets"</span><span class="p">,</span> <span class="nx">Person</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">bought</span>  <span class="o">:</span> <span class="nb">Date</span>
+<span class="p">},</span> <span class="p">{</span>
+    <span class="nx">reverse</span> <span class="o">:</span> <span class="s2">"owners"</span>
+<span class="p">});</span>
+
+<span class="nx">Person</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nx">getPets</span><span class="p">(...);</span>
+<span class="nx">Pet</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nx">getOwners</span><span class="p">(...);</span>
 </pre></div>
       </section>
       <footer>
