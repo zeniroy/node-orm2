@@ -34,7 +34,7 @@
 <div class="highlight"><pre>npm install orm
 </pre></div>
 
-<p>Current stable version: <strong>2.0.2</strong></p>
+<p>Current stable version: <strong>2.0.3</strong></p>
 
 <h2>DBMS Support</h2>
 
@@ -49,12 +49,12 @@
 <li>Create Models, sync, drop, bulk create, get, find, remove, count</li>
 <li>Create Model associations, find, check, create and remove</li>
 <li>Define custom validations (several builtin validations, check instance properties before saving)</li>
-<li>Instance singleton (table rows fetched twice are the same object, changes to one change all)</li>
+<li>Model instance caching and integrity (table rows fetched twice are the same object, changes to one change all)</li>
 </ul><h2>Introduction</h2>
 
 <p>This is a node.js object relational mapping module.</p>
 
-<p>Here is an example on how to use it:</p>
+<p>An example:</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">orm</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"orm"</span><span class="p">);</span>
 
@@ -96,7 +96,7 @@
 
 <h2>Settings</h2>
 
-<p>You have a global settings object and one for each connection.</p>
+<p>Settings are used to store key value pairs. A settings object is stored on the global orm object and on each database connection.</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">orm</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"orm"</span><span class="p">);</span>
 
@@ -113,15 +113,13 @@
 
 <h2>Models</h2>
 
-<p>A Model is a structure binded to one or more tables, depending on the associations. The model name is assumed to be the table name. After defining a model you can use it to manipulate the table.</p>
+<p>A Model is an abstraction over one or more database tables. Models support associations (more below). The name of the model is assumed to match the table name. </p>
 
-<p>After defining a Model you can get a specific element or find one or more based on some conditions.</p>
+<p>Models support behaviours for accessing and manipulating table data.</p>
 
 <h2>Defining Models</h2>
 
-<p>To define a model, you use the reference to the database connection and call <code>define</code>. The function will define a Model
-and will return it to you. You can get it later by it's id directly from the database connection so you don't actually
-need to store a reference to it.</p>
+<p>Call <code>define</code> on the database connection to setup a model. The name of the table and model is used as an identifier for the model on the database connection, so you can easily access the model later using the connection.</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>        <span class="c1">// 'person' will be the table in the database as well as the model id</span>
     <span class="c1">// properties</span>
@@ -134,8 +132,9 @@ need to store a reference to it.</p>
 
 <h2>Loading Models</h2>
 
-<p>If you prefer to have your models defined in separated files, you can define them in a function inside a module and
-export the function has the entire module. You can have cascading loads.</p>
+<p>Models can be in separate modules. Simply ensure that the module holding the models uses module.exports to publish a function that accepts the database connection, then load your models however you like.</p>
+
+<p>Note - using this technique you can have cascading loads.</p>
 
 <div class="highlight"><pre><span class="c1">// your main file (after connecting)</span>
 <span class="nx">db</span><span class="p">.</span><span class="nx">load</span><span class="p">(</span><span class="s2">"./models"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
@@ -169,11 +168,9 @@ export the function has the entire module. You can have cascading loads.</p>
 <span class="p">};</span>
 </pre></div>
 
-<h2>Synching Models</h2>
+<h2>Synchronizing Models</h2>
 
-<p>If you don't have the tables on the database you have to call the <code>.sync()</code> on every Model. This will just create the
-tables necessary for your Model. If you have more than one Model you can call <code>.sync()</code> directly on the database
-connection to syncronize all Models.</p>
+<p>Models can create their underlying tables in the database. You may call Model.sync() on each Model to create the underlying table or you can call db.sync() at a connection level to create all tables for all models.</p>
 
 <div class="highlight"><pre><span class="c1">// db.sync() can also be used</span>
 <span class="nx">Person</span><span class="p">.</span><span class="nx">sync</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
@@ -192,8 +189,9 @@ connection to syncronize all Models.</p>
 
 <h2>Advanced Options</h2>
 
-<p>Using <a href="#settings">Settings</a> or directly on Model definition you can tweak some options.
-For example, each Model instance has a unique ID in the database. This table column is
+<p>ORM2 allows you some advanced tweaks on your Model definitions. You can configure these via settings or in the call to <code>define</code> when you setup the Model.</p>
+
+<p>For example, each Model instance has a unique ID in the database. This table column is
 by default "id" but you can change it.</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s2">"person"</span><span class="p">,</span> <span class="p">{</span>
@@ -217,7 +215,7 @@ by default "id" but you can change it.</p>
 
 <ul>
 <li>
-<code>cache</code> : (default: <code>true</code>) Set it to <code>false</code> to disable Instance cache (Singletons) or set a timeout value (in seconds);</li>
+<code>cache</code> : (default: <code>true</code>) Set it to <code>false</code> to disable Instance cache (<a href="#singleton">Singletons</a>) or set a timeout value (in seconds);</li>
 <li>
 <code>autoSave</code> : (default: <code>false</code>) Set it to <code>true</code> to save an Instance right after changing any property;</li>
 <li>
@@ -228,7 +226,9 @@ you want it to automatically fetch.</li>
 </ul><h2>Hooks</h2>
 
 <p>If you want to listen for a type of event than occurs in instances of a Model, you can attach a function that
-will be called when that event happens. There are some events possible:</p>
+will be called when that event happens. </p>
+
+<p>Currently the following events are supported:</p>
 
 <ul>
 <li>
@@ -284,7 +284,7 @@ will be called when that event happens. There are some events possible:</p>
 <h3>Model.count([ conditions, ] cb)</h3>
 
 <p>If you just want to count the number of items that match a condition you can just use <code>.count()</code> instead of finding all
-of them and counting. This will actually tell the database server to do a count, the count is not done in javascript.</p>
+of them and counting. This will actually tell the database server to do a count (it won't be done in the node process itself).</p>
 
 <div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">count</span><span class="p">({</span> <span class="nx">surname</span><span class="o">:</span> <span class="s2">"Doe"</span> <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">count</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"We have %d Does in our db"</span><span class="p">,</span> <span class="nx">count</span><span class="p">);</span>
@@ -311,7 +311,7 @@ of them and counting. This will actually tell the database server to do a count,
 <code>only</code>: if you don't want all properties, you can give an array with the list of properties you want</li>
 </ul><h4>Chaining</h4>
 
-<p>If you prefer another less complicated syntax you can chain <code>.find()</code> by not giving a callback parameter.</p>
+<p>If you prefer less complicated syntax you can chain <code>.find()</code> by not giving a callback parameter.</p>
 
 <div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="nx">surname</span><span class="o">:</span> <span class="s2">"Doe"</span> <span class="p">}).</span><span class="nx">limit</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nx">offset</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nx">only</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="s2">"surname"</span><span class="p">).</span><span class="nx">run</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">people</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// finds people with surname='Doe', skips first 2 and limits to 3 elements,</span>
@@ -388,12 +388,12 @@ a few examples to describe it:</p>
 <span class="p">{</span> <span class="nx">col1</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">between</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="mi">456</span><span class="p">)</span> <span class="p">}</span> <span class="c1">// `col1` BETWEEN 123 AND 456</span>
 </pre></div>
 
-<h3>Singleton</h3>
+<h3>Caching &amp; Integrity</h3>
 
-<p>Each model instances is cached, so if you fetch the same record using 2 or more different queries, you will
+<p>Model instances are cached. If multiple different queries will result in the same result, you will
 get the same object. If you have other systems that can change your database (or you're developing and need
-to make some manual changes) you should remove this feature by disabling cache. You do this when you're
-defining each Model.</p>
+to make some manual changes) you should remove this feature by disabling cache. This can be done when you're
+defining the Model.</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
     <span class="nx">name</span>    <span class="o">:</span> <span class="nb">String</span>
@@ -402,7 +402,7 @@ defining each Model.</p>
 <span class="p">});</span>
 </pre></div>
 
-<p>If you want singletons but want cache to expire after a period of time, you can pass a number instead of a
+<p>The cache can be configured to expire after a period of time by passing in a number instead of a
 boolean. The number will be considered the cache timeout in seconds (you can use floating point).</p>
 
 <h2>Associations</h2>
@@ -451,7 +451,7 @@ both sides.</li>
 
 <p><strong>Note: This has to be done prior to the association creation.</strong></p>
 
-<p>For relations of 1 to many you have to use <code>hasMany</code> associations. This assumes another table that has 2 columns, one for each table in the association.</p>
+<p>For relations of 1 to many you have to use <code>hasMany</code> associations. This assumes the existence of a separate join table that has 2 columns, each referencing the table in the association. Ideally, these would be foreign key relationships in your database.</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
     <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
