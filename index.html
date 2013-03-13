@@ -36,7 +36,7 @@
 <div class="highlight"><pre>npm install orm
 </pre></div>
 
-<p>Current stable version: <strong>2.0.4</strong></p>
+<p>Current stable version: <strong>2.0.5</strong></p>
 
 <h2>DBMS Support</h2>
 
@@ -95,6 +95,45 @@
     <span class="p">});</span>
 <span class="p">});</span>
 </pre></div>
+
+<h2>Express</h2>
+
+<p>If you're using Express, you might want to use the simple middleware to integrate more easily.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">express</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'express'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">orm</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'orm'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">express</span><span class="p">();</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">orm</span><span class="p">.</span><span class="nx">express</span><span class="p">(</span><span class="s2">"mysql://username:password@host/database"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">define</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">db</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s2">"person"</span><span class="p">,</span> <span class="p">{</span> <span class="p">...</span> <span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">}));</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">80</span><span class="p">);</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// access db using req.db</span>
+    <span class="nx">req</span><span class="p">.</span><span class="nx">db</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">person</span><span class="p">.</span><span class="nx">find</span><span class="p">(...);</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>If you prefer, you can have direct access to the models you define.</p>
+
+<div class="highlight"><pre><span class="c1">// ...</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">orm</span><span class="p">.</span><span class="nx">express</span><span class="p">(</span><span class="s2">"mysql://username:password@host/database"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">define</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">db</span><span class="p">,</span> <span class="nx">models</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">models</span><span class="p">.</span><span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s2">"person"</span><span class="p">,</span> <span class="p">{</span> <span class="p">...</span> <span class="p">});</span>
+
+        <span class="k">return</span> <span class="nx">next</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}));</span>
+<span class="c1">// ...</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">req</span><span class="p">.</span><span class="nx">db</span><span class="p">.</span><span class="nx">Person</span><span class="p">.</span><span class="nx">find</span><span class="p">(...);</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>This also allows you to asynchronously load the models.</p>
 
 <h2>Settings</h2>
 
