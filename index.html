@@ -36,7 +36,7 @@
 <div class="highlight"><pre>npm install orm
 </pre></div>
 
-<p>Current stable version: <strong>2.0.5</strong></p>
+<p>Current stable version: <strong>2.0.6</strong></p>
 
 <h2>DBMS Support</h2>
 
@@ -105,35 +105,21 @@
 <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">express</span><span class="p">();</span>
 
 <span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">orm</span><span class="p">.</span><span class="nx">express</span><span class="p">(</span><span class="s2">"mysql://username:password@host/database"</span><span class="p">,</span> <span class="p">{</span>
-    <span class="nx">define</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">db</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s2">"person"</span><span class="p">,</span> <span class="p">{</span> <span class="p">...</span> <span class="p">});</span>
+    <span class="nx">define</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">db</span><span class="p">,</span> <span class="nx">models</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">models</span><span class="p">.</span><span class="nx">person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s2">"person"</span><span class="p">,</span> <span class="p">{</span> <span class="p">...</span> <span class="p">});</span>
     <span class="p">}</span>
 <span class="p">}));</span>
 <span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">80</span><span class="p">);</span>
 
 <span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// access db using req.db</span>
-    <span class="nx">req</span><span class="p">.</span><span class="nx">db</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">person</span><span class="p">.</span><span class="nx">find</span><span class="p">(...);</span>
+    <span class="c1">// req.models is a reference to models used above in define()</span>
+    <span class="nx">req</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">person</span><span class="p">.</span><span class="nx">find</span><span class="p">(...);</span>
 <span class="p">});</span>
 </pre></div>
 
-<p>If you prefer, you can have direct access to the models you define.</p>
-
-<div class="highlight"><pre><span class="c1">// ...</span>
-<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">orm</span><span class="p">.</span><span class="nx">express</span><span class="p">(</span><span class="s2">"mysql://username:password@host/database"</span><span class="p">,</span> <span class="p">{</span>
-    <span class="nx">define</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">db</span><span class="p">,</span> <span class="nx">models</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">models</span><span class="p">.</span><span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s2">"person"</span><span class="p">,</span> <span class="p">{</span> <span class="p">...</span> <span class="p">});</span>
-
-        <span class="k">return</span> <span class="nx">next</span><span class="p">();</span>
-    <span class="p">}</span>
-<span class="p">}));</span>
-<span class="c1">// ...</span>
-<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">req</span><span class="p">.</span><span class="nx">db</span><span class="p">.</span><span class="nx">Person</span><span class="p">.</span><span class="nx">find</span><span class="p">(...);</span>
-<span class="p">});</span>
-</pre></div>
-
-<p>This also allows you to asynchronously load the models.</p>
+<p>You can call <code>orm.express</code> more than once to have multiple database connections. Models defined across connections
+will be joined together in <code>req.models</code>. <strong>Don't forget to use it before <code>app.use(app.router)</code>, preferably right after your
+assets public folder(s).</strong></p>
 
 <h2>Settings</h2>
 
@@ -345,7 +331,26 @@ of them and counting. This will actually tell the database server to do a count 
 <span class="p">});</span>
 </pre></div>
 
-<h3>Available options</h3>
+<h3>Aggregating Functions</h3>
+
+<p>If you need to get some aggregated values from a Model, you can use <code>Model.aggregate()</code>. Here's an example to better
+illustrate:</p>
+
+<div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">aggregate</span><span class="p">({</span> <span class="nx">surname</span><span class="o">:</span> <span class="s2">"Doe"</span> <span class="p">}).</span><span class="nx">min</span><span class="p">(</span><span class="s2">"age"</span><span class="p">).</span><span class="nx">max</span><span class="p">(</span><span class="s2">"age"</span><span class="p">).</span><span class="nx">get</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">min</span><span class="p">,</span> <span class="nx">max</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"The youngest Doe guy has %d years, while the oldest is %d"</span><span class="p">,</span> <span class="nx">min</span><span class="p">,</span> <span class="nx">max</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>Possible aggregating functions:</p>
+
+<ul>
+<li><code>min</code></li>
+<li><code>max</code></li>
+<li><code>avg</code></li>
+<li><code>sum</code></li>
+<li>
+<code>count</code> (there's a shortcut to this - <code>Model.count</code>)</li>
+</ul><h3>Available options</h3>
 
 <ul>
 <li>
@@ -450,6 +455,9 @@ defining the Model.</p>
 <p>The cache can be configured to expire after a period of time by passing in a number instead of a
 boolean. The number will be considered the cache timeout in seconds (you can use floating point).</p>
 
+<p><strong>Note</strong>: One exception about Caching is that it won't be used if an instance is not saved. For example, if
+you fetch a Person and then change it, while it doesn't get saved it won't be passed from Cache.</p>
+
 <h2>Creating Items</h2>
 
 <h3>Model.create(items, cb)</h3>
@@ -512,6 +520,11 @@ both sides.</li>
         <span class="c1">// if Foo animal has really an owner, John points to it</span>
     <span class="p">});</span>
 <span class="p">});</span>
+</pre></div>
+
+<p>You can mark the <code>owner_id</code> field as required in the database by specifying the <code>required</code> option:</p>
+
+<div class="highlight"><pre><span class="nx">Animal</span><span class="p">.</span><span class="nx">hasOne</span><span class="p">(</span><span class="s2">"owner"</span><span class="p">,</span> <span class="nx">Person</span><span class="p">,</span> <span class="p">{</span> <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span> <span class="p">});</span>
 </pre></div>
 
 <p>If you prefer to use another name for the field (owner_id) you can change this parameter in the settings.</p>
