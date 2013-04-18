@@ -31,8 +31,6 @@
         <h2>Install <a href="http://travis-ci.org/dresende/node-orm2"><img src="https://secure.travis-ci.org/dresende/node-orm2.png" alt="Build Status"></a> <a href="https://npmjs.org/package/orm"><img src="https://badge.fury.io/js/orm.png" alt=""></a>
 </h2>
 
-<h2>Install</h2>
-
 <div class="highlight"><pre>npm install orm
 </pre></div>
 
@@ -136,6 +134,33 @@ assets public folder(s).</strong></p>
 <span class="p">});</span>
 </pre></div>
 
+<h2>Connecting</h2>
+
+<p>You can pass in connection options either as a string:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">orm</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"orm"</span><span class="p">);</span>
+
+<span class="nx">orm</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s2">"mysql://username:password@host/database?pool=true"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="p">{...}</span>
+</pre></div>
+
+<p>or as an object:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">connOpts</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">database</span><span class="o">:</span> <span class="s2">"dbname"</span><span class="p">,</span>
+  <span class="nx">protocol</span><span class="o">:</span> <span class="s2">"[mysql|postgresql|redshift|sqlite]"</span><span class="p">,</span>
+  <span class="nx">host</span><span class="o">:</span>     <span class="s2">"127.0.0.1"</span><span class="p">,</span>
+  <span class="nx">port</span><span class="o">:</span>     <span class="mi">3306</span>         <span class="c1">// optional, defaults to database default</span>
+  <span class="nx">password</span><span class="o">:</span> <span class="s2">"drowssap"</span><span class="p">,</span>
+  <span class="nx">query</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">pool</span><span class="o">:</span>  <span class="kc">true</span><span class="o">|</span><span class="kc">false</span>    <span class="c1">// optional, false by default</span>
+    <span class="nx">debug</span><span class="o">:</span> <span class="kc">true</span><span class="o">|</span><span class="kc">false</span>    <span class="c1">// optional, false by default</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+<span class="nx">orm</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="nx">connOpts</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="p">{...}</span>
+</pre></div>
+
+<p><code>pool</code> is only supported by mysql &amp; postgres.</p>
+
 <h2>Models</h2>
 
 <p>A Model is an abstraction over one or more database tables. Models support associations (more below). The name of the model is assumed to match the table name.</p>
@@ -154,6 +179,44 @@ assets public folder(s).</strong></p>
     <span class="c1">// options (optional)</span>
 <span class="p">});</span>
 </pre></div>
+
+<h3>Properties</h3>
+
+<h4>Types</h4>
+
+<p>Available native object types are:</p>
+
+<p><code>String, Number, Boolean, Date, Object, Buffer</code></p>
+
+<p>If defining properties using the latter object syntax, the types are:</p>
+
+<p><code>text, number, boolean, date, enum, object, binary</code></p>
+
+<h4>Options</h4>
+
+<h5>[all types]</h5>
+
+<ul>
+<li>
+<code>required</code>: true marks the column as <code>NOT NULL</code>, false (default)</li>
+<li>
+<code>defaultValue</code>: sets the default value for the field</li>
+</ul><h5>string</h5>
+
+<ul>
+<li>
+<code>size</code>: max length of the string</li>
+</ul><h5>number</h5>
+
+<ul>
+<li>
+<code>rational</code>: true (default) creates a FLOAT/REAL, false an INTEGER</li>
+</ul><h5>date</h5>
+
+<ul>
+<li>
+<code>time</code>: true (default) creates a DATETIME/TIMESTAMP, false a DATE</li>
+</ul><p>Note that these may vary accross drivers.</p>
 
 <h2>Loading Models</h2>
 
@@ -339,6 +402,14 @@ illustrate:</p>
 <span class="p">});</span>
 </pre></div>
 
+<p>Here's an example to illustrate how to use groupby:</p>
+
+<div class="highlight"><pre><span class="c1">//The same as "select avg(weight), age from person where country='someCountry' group by age;"</span>
+<span class="nx">Person</span><span class="p">.</span><span class="nx">aggregate</span><span class="p">([</span><span class="s2">"age"</span><span class="p">],</span> <span class="p">{</span> <span class="nx">country</span><span class="o">:</span> <span class="s2">"someCountry"</span> <span class="p">}).</span><span class="nx">avg</span><span class="p">(</span><span class="s2">"weight"</span><span class="p">).</span><span class="nx">groupBy</span><span class="p">(</span><span class="s2">"age"</span><span class="p">).</span><span class="nx">get</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">stats</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// stats is an Array, each item should have 'age' and 'avg_weight'</span>
+<span class="p">});</span>
+</pre></div>
+
 <p>Possible aggregating functions:</p>
 
 <ul>
@@ -434,6 +505,7 @@ a few examples to describe it:</p>
 <span class="p">{</span> <span class="nx">col1</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">lt</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span> <span class="p">}</span> <span class="c1">// `col1` &lt; 123</span>
 <span class="p">{</span> <span class="nx">col1</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">lte</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span> <span class="p">}</span> <span class="c1">// `col1` &lt;= 123</span>
 <span class="p">{</span> <span class="nx">col1</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">between</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="mi">456</span><span class="p">)</span> <span class="p">}</span> <span class="c1">// `col1` BETWEEN 123 AND 456</span>
+<span class="p">{</span> <span class="nx">col1</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">like</span><span class="p">(</span><span class="mi">12</span> <span class="o">+</span> <span class="s2">"%"</span><span class="p">)</span> <span class="p">}</span> <span class="c1">// `col1` like '12%'</span>
 </pre></div>
 
 <h3>Caching &amp; Integrity</h3>
@@ -478,6 +550,39 @@ you fetch a Person and then change it, while it doesn't get saved it won't be pa
 <span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">items</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// err - description of the error or null</span>
     <span class="c1">// items - array of inserted items</span>
+<span class="p">});</span>
+</pre></div>
+
+<h3>Updating items (called Instances)</h3>
+
+<p>Every item returned has the properties that were defined to the Model and also a couple of methods you can
+use to change each item.</p>
+
+<div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">John</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">John</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="s2">"Joe"</span><span class="p">;</span>
+    <span class="nx">John</span><span class="p">.</span><span class="nx">surname</span> <span class="o">=</span> <span class="s2">"Doe"</span><span class="p">;</span>
+    <span class="nx">John</span><span class="p">.</span><span class="nx">save</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"saved!"</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>Updating and then saving an instance can be done in a single call:</p>
+
+<div class="highlight"><pre><span class="nx">Person</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">John</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">John</span><span class="p">.</span><span class="nx">save</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">"Joe"</span><span class="p">,</span> <span class="nx">surname</span><span class="o">:</span> <span class="s2">"Doe"</span> <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"saved!"</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>If you want to remove an instance, just do:</p>
+
+<div class="highlight"><pre><span class="c1">// you could do this without even fetching it, look at Chaining section above</span>
+<span class="nx">Person</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">John</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">John</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"removed!"</span><span class="p">);</span>
+    <span class="p">});</span>
 <span class="p">});</span>
 </pre></div>
 
