@@ -142,8 +142,12 @@ assets public folder(s).</strong></p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">orm</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"orm"</span><span class="p">);</span>
 
-<span class="nx">orm</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s2">"mysql://username:password@host/database?pool=true"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="p">{...}</span>
+<span class="nx">orm</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s2">"mysql://username:password@host/database?pool=true"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">});</span>
 </pre></div>
+
+<p><strong>Note:</strong> <code>pool</code> is only supported by mysql &amp; postgres.</p>
 
 <p>Or as an object:</p>
 
@@ -155,14 +159,24 @@ assets public folder(s).</strong></p>
   <span class="nx">username</span> <span class="o">:</span> <span class="s2">".."</span><span class="p">,</span>
   <span class="nx">password</span> <span class="o">:</span> <span class="s2">".."</span><span class="p">,</span>
   <span class="nx">query</span>    <span class="o">:</span> <span class="p">{</span>
-    <span class="nx">pool</span>  <span class="o">:</span>  <span class="kc">true</span><span class="o">|</span><span class="kc">false</span>    <span class="c1">// optional, false by default</span>
-    <span class="nx">debug</span> <span class="o">:</span> <span class="kc">true</span><span class="o">|</span><span class="kc">false</span>    <span class="c1">// optional, false by default</span>
+    <span class="nx">pool</span>     <span class="o">:</span> <span class="kc">true</span><span class="o">|</span><span class="kc">false</span>    <span class="c1">// optional, false by default</span>
+    <span class="nx">debug</span>    <span class="o">:</span> <span class="kc">true</span><span class="o">|</span><span class="kc">false</span>    <span class="c1">// optional, false by default</span>
   <span class="p">}</span>
 <span class="p">};</span>
-<span class="nx">orm</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="nx">opts</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="p">{...}</span>
+<span class="nx">orm</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="nx">opts</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">});</span>
 </pre></div>
 
-<p><code>pool</code> is only supported by mysql &amp; postgres.</p>
+<p>You can also avoid passing a callback and just listen for the connect event:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">orm</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"orm"</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">db</span>  <span class="o">=</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s2">"mysql://username:password@host/database"</span><span class="p">);</span>
+
+<span class="nx">db</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">"connect"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">});</span>
+</pre></div>
 
 <h2>Models</h2>
 
