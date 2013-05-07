@@ -48,7 +48,7 @@
 <li>Create Model associations, find, check, create and remove</li>
 <li>Define custom validations (several builtin validations, check instance properties before saving)</li>
 <li>Model instance caching and integrity (table rows fetched twice are the same object, changes to one change all)</li>
-<li>Plugins: <a href="http://github.com/dresende/node-orm-mysql-fts">MySQL FTS</a>
+<li>Plugins: <a href="http://github.com/dresende/node-orm-mysql-fts">MySQL FTS</a> , <a href="http://github.com/dresende/node-orm-paging">Pagination</a>
 </li>
 </ul><h2>Introduction</h2>
 
@@ -570,7 +570,7 @@ you fetch a Person and then change it, while it doesn't get saved it won't be pa
 <span class="p">});</span>
 </pre></div>
 
-<h3>Updating items (called Instances)</h3>
+<h2>Updating Items</h2>
 
 <p>Every item returned has the properties that were defined to the Model and also a couple of methods you can
 use to change each item.</p>
@@ -599,6 +599,63 @@ use to change each item.</p>
 <span class="nx">Person</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">John</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">John</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"removed!"</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<h2>Validations</h2>
+
+<p>You can define validations for every property of a Model. You can have one or more validations for each property.
+You can also use the predefined validations or create your own.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s2">"person"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span><span class="p">,</span>
+    <span class="nx">age</span>  <span class="o">:</span> <span class="nb">Number</span>
+<span class="p">},</span> <span class="p">{</span>
+    <span class="nx">validations</span> <span class="o">:</span> <span class="p">{</span>
+        <span class="nx">name</span> <span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">validators</span><span class="p">.</span><span class="nx">rangeLength</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">,</span> <span class="s2">"missing"</span><span class="p">),</span> <span class="c1">// "missing" is a name given to this validation, instead of default</span>
+        <span class="nx">age</span>  <span class="o">:</span> <span class="p">[</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">validators</span><span class="p">.</span><span class="nx">rangeNumber</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">validators</span><span class="p">.</span><span class="nx">insideList</span><span class="p">([</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span> <span class="p">])</span> <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>The code above defines that the <code>name</code> length must be between 1 and undefined (undefined means any) and <code>age</code>
+must be a number between 0 and 10 (inclusive) but also one of the listed values. The example might not make sense
+but you get the point.</p>
+
+<p>When saving an item, if it fails to validate any of the defined validations you'll get an <code>error</code> object with the property
+name and validation error description. This description should help you identify what happened.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">John</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">({</span>
+    <span class="nx">name</span> <span class="o">:</span> <span class="s2">""</span><span class="p">,</span>
+    <span class="nx">age</span> <span class="o">:</span> <span class="mi">20</span>
+<span class="p">});</span>
+<span class="nx">John</span><span class="p">.</span><span class="nx">save</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// err.field = "name" , err.value = "" , err.msg = "missing"</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>The validation stops after the first validation error. If you want it to validate every property and return all validation
+errors, you can change this behavior on global or local settings:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">orm</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"orm"</span><span class="p">);</span>
+
+<span class="nx">orm</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"instance.returnAllErrors"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span> <span class="c1">// global or..</span>
+
+<span class="nx">orm</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s2">"...."</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">db</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"instance.returnAllErrors"</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span> <span class="c1">// .. local</span>
+
+    <span class="c1">// ...</span>
+
+    <span class="kd">var</span> <span class="nx">John</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Person</span><span class="p">({</span>
+        <span class="nx">name</span> <span class="o">:</span> <span class="s2">""</span><span class="p">,</span>
+        <span class="nx">age</span> <span class="o">:</span> <span class="mi">15</span>
+    <span class="p">});</span>
+    <span class="nx">John</span><span class="p">.</span><span class="nx">save</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">assert</span><span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">err</span><span class="p">));</span>
+        <span class="c1">// err[0].field = "name" , err[0].value = "" , err[0].msg = "missing"</span>
+        <span class="c1">// err[1].field = "age"  , err[1].value = 15 , err[1].msg = "out-of-range-number"</span>
+        <span class="c1">// err[2].field = "age"  , err[2].value = 15 , err[2].msg = "outside-list"</span>
     <span class="p">});</span>
 <span class="p">});</span>
 </pre></div>
