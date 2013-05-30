@@ -28,20 +28,23 @@
         </ul>
       </header>
       <section>
-        <h2>Install <a href="http://travis-ci.org/dresende/node-orm2"><img src="https://secure.travis-ci.org/dresende/node-orm2.png" alt="Build Status"></a> <a href="https://npmjs.org/package/orm"><img src="https://badge.fury.io/js/orm.png" alt=""></a>
+        <h2>
+<a name="install--" class="anchor" href="#install--"><span class="octicon octicon-link"></span></a>Install <a href="http://travis-ci.org/dresende/node-orm2"><img src="https://secure.travis-ci.org/dresende/node-orm2.png" alt="Build Status"></a> <a href="https://npmjs.org/package/orm"><img src="https://badge.fury.io/js/orm.png" alt=""></a>
 </h2>
 
 <div class="highlight"><pre>npm install orm
 </pre></div>
 
-<h2>DBMS Support</h2>
+<h2>
+<a name="dbms-support" class="anchor" href="#dbms-support"><span class="octicon octicon-link"></span></a>DBMS Support</h2>
 
 <ul>
 <li>MySQL</li>
 <li>PostgreSQL</li>
 <li>Amazon Redshift</li>
 <li>SQLite</li>
-</ul><h2>Features</h2>
+</ul><h2>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h2>
 
 <ul>
 <li>Create Models, sync, drop, bulk create, get, find, remove, count, aggregated functions</li>
@@ -50,7 +53,8 @@
 <li>Model instance caching and integrity (table rows fetched twice are the same object, changes to one change all)</li>
 <li>Plugins: <a href="http://dresende.github.io/node-orm-mysql-fts">MySQL FTS</a> , <a href="http://dresende.github.io/node-orm-paging">Pagination</a>
 </li>
-</ul><h2>Introduction</h2>
+</ul><h2>
+<a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h2>
 
 <p>This is a node.js object relational mapping module.</p>
 
@@ -59,7 +63,7 @@
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">orm</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"orm"</span><span class="p">);</span>
 
 <span class="nx">orm</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s2">"mysql://username:password@host/database"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
 
     <span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s2">"person"</span><span class="p">,</span> <span class="p">{</span>
         <span class="nx">name</span>      <span class="o">:</span> <span class="nb">String</span><span class="p">,</span>
@@ -94,7 +98,8 @@
 <span class="p">});</span>
 </pre></div>
 
-<h2>Express</h2>
+<h2>
+<a name="express" class="anchor" href="#express"><span class="octicon octicon-link"></span></a>Express</h2>
 
 <p>If you're using Express, you might want to use the simple middleware to integrate more easily.</p>
 
@@ -119,7 +124,8 @@
 will be joined together in <code>req.models</code>. <strong>Don't forget to use it before <code>app.use(app.router)</code>, preferably right after your
 assets public folder(s).</strong></p>
 
-<h2>Settings</h2>
+<h2>
+<a name="settings" class="anchor" href="#settings"><span class="octicon octicon-link"></span></a>Settings</h2>
 
 <p>Settings are used to store key value pairs. A settings object is stored on the global orm object and on each database connection.</p>
 
@@ -136,7 +142,30 @@ assets public folder(s).</strong></p>
 <span class="p">});</span>
 </pre></div>
 
-<h2>Connecting</h2>
+<h2>
+<a name="connecting" class="anchor" href="#connecting"><span class="octicon octicon-link"></span></a>Connecting</h2>
+
+<p>First, add the correct driver to your <code>package.json</code>:</p>
+
+<table>
+<tr>
+<th align="left">driver</th>
+<th align="left">dependency</th>
+</tr>
+<tr>
+<td align="left">mysql</td>
+<td align="left"><code>"mysql" : "2.0.0-alpha7"</code></td>
+</tr>
+<tr>
+<td align="left">postgres<br>redshift</td>
+<td align="left"><code>"pg": "~1.0.0"</code></td>
+</tr>
+<tr>
+<td align="left">sqlite</td>
+<td align="left"><code>"sqlite3" : "2.1.7"</code></td>
+</tr>
+</table><h3>
+<a name="options" class="anchor" href="#options"><span class="octicon octicon-link"></span></a>Options</h3>
 
 <p>You can pass in connection options either as a string:</p>
 
@@ -159,7 +188,7 @@ assets public folder(s).</strong></p>
   <span class="nx">user</span>     <span class="o">:</span> <span class="s2">".."</span><span class="p">,</span>
   <span class="nx">password</span> <span class="o">:</span> <span class="s2">".."</span><span class="p">,</span>
   <span class="nx">query</span>    <span class="o">:</span> <span class="p">{</span>
-    <span class="nx">pool</span>     <span class="o">:</span> <span class="kc">true</span><span class="o">|</span><span class="kc">false</span>    <span class="c1">// optional, false by default</span>
+    <span class="nx">pool</span>     <span class="o">:</span> <span class="kc">true</span><span class="o">|</span><span class="kc">false</span><span class="p">,</span>   <span class="c1">// optional, false by default</span>
     <span class="nx">debug</span>    <span class="o">:</span> <span class="kc">true</span><span class="o">|</span><span class="kc">false</span>    <span class="c1">// optional, false by default</span>
   <span class="p">}</span>
 <span class="p">};</span>
@@ -178,13 +207,15 @@ assets public folder(s).</strong></p>
 <span class="p">});</span>
 </pre></div>
 
-<h2>Models</h2>
+<h2>
+<a name="models" class="anchor" href="#models"><span class="octicon octicon-link"></span></a>Models</h2>
 
 <p>A Model is an abstraction over one or more database tables. Models support associations (more below). The name of the model is assumed to match the table name.</p>
 
 <p>Models support behaviours for accessing and manipulating table data.</p>
 
-<h2>Defining Models</h2>
+<h2>
+<a name="defining-models" class="anchor" href="#defining-models"><span class="octicon octicon-link"></span></a>Defining Models</h2>
 
 <p>Call <code>define</code> on the database connection to setup a model. The name of the table and model is used as an identifier for the model on the database connection, so you can easily access the model later using the connection.</p>
 
@@ -197,45 +228,118 @@ assets public folder(s).</strong></p>
 <span class="p">});</span>
 </pre></div>
 
-<h3>Properties</h3>
+<h3>
+<a name="properties" class="anchor" href="#properties"><span class="octicon octicon-link"></span></a>Properties</h3>
 
-<h4>Types</h4>
+<h4>
+<a name="types" class="anchor" href="#types"><span class="octicon octicon-link"></span></a>Types</h4>
 
-<p>Available native object types are:</p>
+<table>
+<tr>
+<th align="left">Native</th>
+<th align="left">String</th>
+<th align="left">Native</th>
+<th align="left">String</th>
+</tr>
+<tr>
+<td align="left">String</td>
+<td align="left">'text'</td>
+<td align="left">Date</td>
+<td align="left">'date '</td>
+</tr>
+<tr>
+<td align="left">Number</td>
+<td align="left">'number'</td>
+<td align="left">Object</td>
+<td align="left">'object'</td>
+</tr>
+<tr>
+<td align="left">Boolean</td>
+<td align="left">'boolean'</td>
+<td align="left">Buffer</td>
+<td align="left">'binary'</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">---</td>
+<td align="left">'enum'</td>
+</tr>
+</table><h4>
+<a name="options-1" class="anchor" href="#options-1"><span class="octicon octicon-link"></span></a>Options</h4>
 
-<p><code>String, Number, Boolean, Date, Object, Buffer</code></p>
-
-<p>If defining properties using the latter object syntax, the types are:</p>
-
-<p><code>text, number, boolean, date, enum, object, binary</code></p>
-
-<h4>Options</h4>
-
-<h5>[all types]</h5>
+<h5>
+<a name="all-types" class="anchor" href="#all-types"><span class="octicon octicon-link"></span></a>[all types]</h5>
 
 <ul>
 <li>
 <code>required</code>: true marks the column as <code>NOT NULL</code>, false (default)</li>
 <li>
 <code>defaultValue</code>: sets the default value for the field</li>
-</ul><h5>string</h5>
+</ul><h5>
+<a name="string" class="anchor" href="#string"><span class="octicon octicon-link"></span></a>string</h5>
 
 <ul>
 <li>
 <code>size</code>: max length of the string</li>
-</ul><h5>number</h5>
+</ul><h5>
+<a name="number" class="anchor" href="#number"><span class="octicon octicon-link"></span></a>number</h5>
 
 <ul>
 <li>
 <code>rational</code>: true (default) creates a FLOAT/REAL, false an INTEGER</li>
-</ul><h5>date</h5>
+<li>
+<code>size</code>: byte size of number, default is 4. Note that 8 byte numbers <a href="http://stackoverflow.com/questions/307179/what-is-javascripts-max-int-whats-the-highest-integer-value-a-number-can-go-t">have limitations</a>
+</li>
+<li>
+<code>unsigned</code>: true to make INTEGER unsigned, default is false</li>
+</ul><h5>
+<a name="date" class="anchor" href="#date"><span class="octicon octicon-link"></span></a>date</h5>
 
 <ul>
 <li>
 <code>time</code>: true (default) creates a DATETIME/TIMESTAMP, false a DATE</li>
 </ul><p>Note that these may vary accross drivers.</p>
 
-<h2>Loading Models</h2>
+<h3>
+<a name="instance-methods" class="anchor" href="#instance-methods"><span class="octicon octicon-link"></span></a>Instance Methods</h3>
+
+<p>Are passed in during model definition.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span>    <span class="o">:</span> <span class="nb">String</span><span class="p">,</span>
+    <span class="nx">surname</span> <span class="o">:</span> <span class="nb">String</span>
+<span class="p">},</span> <span class="p">{</span>
+    <span class="nx">methods</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">fullName</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s1">' '</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">surname</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">Person</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">person</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">person</span><span class="p">.</span><span class="nx">fullName</span><span class="p">()</span> <span class="p">);</span>
+<span class="p">})</span>
+</pre></div>
+
+<h3>
+<a name="model-methods" class="anchor" href="#model-methods"><span class="octicon octicon-link"></span></a>Model Methods</h3>
+
+<p>Are defined directly on the model.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span>    <span class="o">:</span> <span class="nb">String</span><span class="p">,</span>
+    <span class="nx">height</span>  <span class="o">:</span> <span class="p">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">'number'</span><span class="p">,</span> <span class="nx">rational</span><span class="o">:</span> <span class="kc">false</span> <span class="p">}</span>
+<span class="p">});</span>
+<span class="nx">Person</span><span class="p">.</span><span class="nx">tallerThan</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">height</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="nx">height</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">gt</span><span class="p">(</span><span class="nx">height</span><span class="p">)</span> <span class="p">},</span> <span class="nx">callback</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="nx">Person</span><span class="p">.</span><span class="nx">tallerThan</span><span class="p">(</span> <span class="mi">192</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">tallPeople</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span> <span class="p">);</span>
+</pre></div>
+
+<h2>
+<a name="loading-models" class="anchor" href="#loading-models"><span class="octicon octicon-link"></span></a>Loading Models</h2>
 
 <p>Models can be in separate modules. Simply ensure that the module holding the models uses module.exports to publish a function that accepts the database connection, then load your models however you like.</p>
 
@@ -273,7 +377,8 @@ assets public folder(s).</strong></p>
 <span class="p">};</span>
 </pre></div>
 
-<h2>Synchronizing Models</h2>
+<h2>
+<a name="synchronizing-models" class="anchor" href="#synchronizing-models"><span class="octicon octicon-link"></span></a>Synchronizing Models</h2>
 
 <p>Models can create their underlying tables in the database. You may call Model.sync() on each Model to create the underlying table or you can call db.sync() at a connection level to create all tables for all models.</p>
 
@@ -283,7 +388,8 @@ assets public folder(s).</strong></p>
 <span class="p">});</span>
 </pre></div>
 
-<h2>Dropping Models</h2>
+<h2>
+<a name="dropping-models" class="anchor" href="#dropping-models"><span class="octicon octicon-link"></span></a>Dropping Models</h2>
 
 <p>If you want to drop a Model and remove all tables you can use the <code>.drop()</code> method.</p>
 
@@ -292,7 +398,8 @@ assets public folder(s).</strong></p>
 <span class="p">});</span>
 </pre></div>
 
-<h2>Advanced Options</h2>
+<h2>
+<a name="advanced-options" class="anchor" href="#advanced-options"><span class="octicon octicon-link"></span></a>Advanced Options</h2>
 
 <p>ORM2 allows you some advanced tweaks on your Model definitions. You can configure these via settings or in the call to <code>define</code> when you setup the Model.</p>
 
@@ -328,7 +435,8 @@ by default "id" but you can change it.</p>
 <li>
 <code>autoFetchLimit</code> : (default: <code>1</code>) If <code>autoFetch</code> is enabled this defines how many hoops (associations of associations)
 you want it to automatically fetch.</li>
-</ul><h2>Hooks</h2>
+</ul><h2>
+<a name="hooks" class="anchor" href="#hooks"><span class="octicon octicon-link"></span></a>Hooks</h2>
 
 <p>If you want to listen for a type of event than occurs in instances of a Model, you can attach a function that
 will be called when that event happens.</p>
@@ -343,18 +451,43 @@ will be called when that event happens.</p>
 <li>
 <code>afterSave</code> : (bool success) Right after saving;</li>
 <li>
-<code>beforeCreate</code> : (no parameters) Right before trying to save a new instance;</li>
+<code>beforeCreate</code> : (no parameters) Right before trying to save a new instance (prior to <code>beforeSave</code>);</li>
 <li>
 <code>afterCreate</code> : (bool success) Right after saving a new instance;</li>
 <li>
-<code>beforeRemove</code> : (no parameters) Right before trying to remove an instance.</li>
+<code>beforeRemove</code> : (no parameters) Right before trying to remove an instance;</li>
 <li>
 <code>afterRemove</code> : (bool success) Right after removing an instance;</li>
+<li>
+<code>beforeValidation</code> : (no parameters) Before all validations and prior to <code>beforeCreate</code> and <code>beforeSave</code>;</li>
 </ul><p>All hook function are called with <code>this</code> as the instance so you can access anything you want related to it.</p>
 
-<h2>Finding Items</h2>
+<p>For all <code>before*</code> hooks, you can add an additional parameter to the hook function. This parameter will be a function that
+must be called to tell if the hook allows the execution to continue or to break. You might be familiar with this workflow
+already from Express. Here's an example:</p>
 
-<h3>Model.get(id, [ options ], cb)</h3>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s2">"person"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">name</span>    <span class="o">:</span> <span class="nb">String</span><span class="p">,</span>
+    <span class="nx">surname</span> <span class="o">:</span> <span class="nb">String</span>
+<span class="p">},</span> <span class="p">{</span>
+    <span class="nx">hooks</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">beforeCreate</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">surname</span> <span class="o">==</span> <span class="s2">"Doe"</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nx">next</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">"No Does allowed"</span><span class="p">));</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="nx">next</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>This workflow allows you to make asynchronous work before calling <code>next</code>.</p>
+
+<h2>
+<a name="finding-items" class="anchor" href="#finding-items"><span class="octicon octicon-link"></span></a>Finding Items</h2>
+
+<h3>
+<a name="modelgetid--options--cb" class="anchor" href="#modelgetid--options--cb"><span class="octicon octicon-link"></span></a>Model.get(id, [ options ], cb)</h3>
 
 <p>To get a specific element from the database use <code>Model.get</code>.</p>
 
@@ -363,7 +496,8 @@ will be called when that event happens.</p>
 <span class="p">});</span>
 </pre></div>
 
-<h3>Model.find([ conditions ] [, options ] [, limit ] [, order ] [, cb ])</h3>
+<h3>
+<a name="modelfind-conditions---options---limit---order---cb-" class="anchor" href="#modelfind-conditions---options---limit---order---cb-"><span class="octicon octicon-link"></span></a>Model.find([ conditions ] [, options ] [, limit ] [, order ] [, cb ])</h3>
 
 <p>Finding one or more elements has more options, each one can be given in no specific parameter order. Only <code>options</code> has to be after <code>conditions</code> (even if it's an empty object).</p>
 
@@ -390,7 +524,8 @@ will be called when that event happens.</p>
 <span class="p">});</span>
 </pre></div>
 
-<h3>Model.count([ conditions, ] cb)</h3>
+<h3>
+<a name="modelcount-conditions--cb" class="anchor" href="#modelcount-conditions--cb"><span class="octicon octicon-link"></span></a>Model.count([ conditions, ] cb)</h3>
 
 <p>If you just want to count the number of items that match a condition you can just use <code>.count()</code> instead of finding all
 of them and counting. This will actually tell the database server to do a count (it won't be done in the node process itself).</p>
@@ -400,7 +535,8 @@ of them and counting. This will actually tell the database server to do a count 
 <span class="p">});</span>
 </pre></div>
 
-<h3>Model.exists([ conditions, ] cb)</h3>
+<h3>
+<a name="modelexists-conditions--cb" class="anchor" href="#modelexists-conditions--cb"><span class="octicon octicon-link"></span></a>Model.exists([ conditions, ] cb)</h3>
 
 <p>Similar to <code>.count()</code>, this method just checks if the count is greater than zero or not.</p>
 
@@ -409,7 +545,8 @@ of them and counting. This will actually tell the database server to do a count 
 <span class="p">});</span>
 </pre></div>
 
-<h3>Aggregating Functions</h3>
+<h3>
+<a name="aggregating-functions" class="anchor" href="#aggregating-functions"><span class="octicon octicon-link"></span></a>Aggregating Functions</h3>
 
 <p>If you need to get some aggregated values from a Model, you can use <code>Model.aggregate()</code>. Here's an example to better
 illustrate:</p>
@@ -419,7 +556,9 @@ illustrate:</p>
 <span class="p">});</span>
 </pre></div>
 
-<p>Here's an example to illustrate how to use groupby:</p>
+<p>An <code>Array</code> of properties can be passed to select only a few properties. An <code>Object</code> is also accepted to define conditions.</p>
+
+<p>Here's an example to illustrate how to use <code>.groupBy()</code>:</p>
 
 <div class="highlight"><pre><span class="c1">//The same as "select avg(weight), age from person where country='someCountry' group by age;"</span>
 <span class="nx">Person</span><span class="p">.</span><span class="nx">aggregate</span><span class="p">([</span><span class="s2">"age"</span><span class="p">],</span> <span class="p">{</span> <span class="nx">country</span><span class="o">:</span> <span class="s2">"someCountry"</span> <span class="p">}).</span><span class="nx">avg</span><span class="p">(</span><span class="s2">"weight"</span><span class="p">).</span><span class="nx">groupBy</span><span class="p">(</span><span class="s2">"age"</span><span class="p">).</span><span class="nx">get</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">stats</span><span class="p">)</span> <span class="p">{</span>
@@ -427,7 +566,17 @@ illustrate:</p>
 <span class="p">});</span>
 </pre></div>
 
-<p>Possible aggregating functions:</p>
+<h3>
+<a name="base-aggregate-methods" class="anchor" href="#base-aggregate-methods"><span class="octicon octicon-link"></span></a>Base <code>.aggregate()</code> methods</h3>
+
+<ul>
+<li>
+<code>.limit()</code>: you can pass a number as a limit, or two numbers as offset and limit respectively</li>
+<li>
+<code>.order()</code>: same as <code>Model.find().order()</code>
+</li>
+</ul><h3>
+<a name="additional-aggregate-methods" class="anchor" href="#additional-aggregate-methods"><span class="octicon octicon-link"></span></a>Additional <code>.aggregate()</code> methods</h3>
 
 <ul>
 <li><code>min</code></li>
@@ -436,16 +585,10 @@ illustrate:</p>
 <li><code>sum</code></li>
 <li>
 <code>count</code> (there's a shortcut to this - <code>Model.count</code>)</li>
-</ul><h3>Available options</h3>
+</ul><p>There are more aggregate functions depending on the driver (Math functions for example).</p>
 
-<ul>
-<li>
-<code>offset</code>: discards the first <code>N</code> elements</li>
-<li>
-<code>limit</code>: although it can be passed as a direct argument, you can use it here if you prefer</li>
-<li>
-<code>only</code>: if you don't want all properties, you can give an array with the list of properties you want</li>
-</ul><h4>Chaining</h4>
+<h4>
+<a name="chaining" class="anchor" href="#chaining"><span class="octicon octicon-link"></span></a>Chaining</h4>
 
 <p>If you prefer less complicated syntax you can chain <code>.find()</code> by not giving a callback parameter.</p>
 
@@ -502,7 +645,8 @@ in the end.</p>
 <code>.get()</code> to retrieve the list;</li>
 <li>
 <code>.save()</code> to save all item changes.</li>
-</ul><h4>Conditions</h4>
+</ul><h4>
+<a name="conditions" class="anchor" href="#conditions"><span class="octicon octicon-link"></span></a>Conditions</h4>
 
 <p>Conditions are defined as an object where every key is a property (table column). All keys are supposed
 to be concatenated by the logical <code>AND</code>. Values are considered to match exactly, unless you're passing
@@ -525,7 +669,8 @@ a few examples to describe it:</p>
 <span class="p">{</span> <span class="nx">col1</span><span class="o">:</span> <span class="nx">orm</span><span class="p">.</span><span class="nx">like</span><span class="p">(</span><span class="mi">12</span> <span class="o">+</span> <span class="s2">"%"</span><span class="p">)</span> <span class="p">}</span> <span class="c1">// `col1` like '12%'</span>
 </pre></div>
 
-<h3>Caching &amp; Integrity</h3>
+<h3>
+<a name="caching--integrity" class="anchor" href="#caching--integrity"><span class="octicon octicon-link"></span></a>Caching &amp; Integrity</h3>
 
 <p>Model instances are cached. If multiple different queries will result in the same result, you will
 get the same object. If you have other systems that can change your database (or you're developing and need
@@ -539,15 +684,24 @@ defining the Model.</p>
 <span class="p">});</span>
 </pre></div>
 
+<p>and also globally:</p>
+
+<div class="highlight"><pre><span class="nx">orm</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'...'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">db</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">db</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'instance.cache'</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
 <p>The cache can be configured to expire after a period of time by passing in a number instead of a
 boolean. The number will be considered the cache timeout in seconds (you can use floating point).</p>
 
 <p><strong>Note</strong>: One exception about Caching is that it won't be used if an instance is not saved. For example, if
 you fetch a Person and then change it, while it doesn't get saved it won't be passed from Cache.</p>
 
-<h2>Creating Items</h2>
+<h2>
+<a name="creating-items" class="anchor" href="#creating-items"><span class="octicon octicon-link"></span></a>Creating Items</h2>
 
-<h3>Model.create(items, cb)</h3>
+<h3>
+<a name="modelcreateitems-cb" class="anchor" href="#modelcreateitems-cb"><span class="octicon octicon-link"></span></a>Model.create(items, cb)</h3>
 
 <p>To insert new elements to the database use <code>Model.create</code>.</p>
 
@@ -570,7 +724,8 @@ you fetch a Person and then change it, while it doesn't get saved it won't be pa
 <span class="p">});</span>
 </pre></div>
 
-<h2>Updating Items</h2>
+<h2>
+<a name="updating-items" class="anchor" href="#updating-items"><span class="octicon octicon-link"></span></a>Updating Items</h2>
 
 <p>Every item returned has the properties that were defined to the Model and also a couple of methods you can
 use to change each item.</p>
@@ -603,7 +758,8 @@ use to change each item.</p>
 <span class="p">});</span>
 </pre></div>
 
-<h2>Validations</h2>
+<h2>
+<a name="validations" class="anchor" href="#validations"><span class="octicon octicon-link"></span></a>Validations</h2>
 
 <p>You can define validations for every property of a Model. You can have one or more validations for each property.
 You can also use the predefined validations or create your own.</p>
@@ -660,27 +816,87 @@ errors, you can change this behavior on global or local settings:</p>
 <span class="p">});</span>
 </pre></div>
 
-<h2>Associations</h2>
+<h2>
+<a name="associations" class="anchor" href="#associations"><span class="octicon octicon-link"></span></a>Associations</h2>
 
 <p>An association is a relation between one or more tables.</p>
 
-<h2>hasOne vs. hasMany</h2>
+<h3>
+<a name="hasone" class="anchor" href="#hasone"><span class="octicon octicon-link"></span></a>hasOne</h3>
 
-<p>Since this topic brings some confusion to many people including myself, here's a list of the possibilities
-supported by both types of association.</p>
+<p>Is a <strong>many to one</strong> relationship. It's the same as <strong>belongs to.</strong><br>
+Eg: <code>Animal.hasOne('owner', Person)</code>.<br>
+Animal can only have one owner, but Person can have many animals.<br>
+Animal will have the <code>owner_id</code> property automatically added.</p>
 
-<ul>
-<li>
-<code>hasOne</code> : it's a <strong>Many-to-One</strong> relationship. A.hasOne(B) means A will have one (or none) of B, but B can be
-associated with many A;</li>
-<li>
-<code>hasMany</code>: it's a <strong>One-to-Many</strong> relationship. A.hasMany(B) means A will have none, one or more of B. Actually
-B will be associated with possibly many A but you don't have how to find it easily (see next);</li>
-<li>
-<code>hasMany</code> + reverse: it's a <strong>Many-to-Many</strong> relationship. A.hasMany(B, { reverse: A }) means A can have none or
-many B and also B can have none or many A. Accessors will be created in both models so you can manage them from
-both sides.</li>
-</ul><p>If you have a relation of 1 to 0 or 1 to 1, you should use <code>hasOne</code> association. This assumes a column in the model that has the id of the other end of the relation.</p>
+<p>The following functions will become available:</p>
+
+<div class="highlight"><pre><span class="nx">animal</span><span class="p">.</span><span class="nx">getOwner</span><span class="p">(</span><span class="kd">function</span><span class="p">..)</span>         <span class="c1">// Gets owner</span>
+<span class="nx">animal</span><span class="p">.</span><span class="nx">setOwner</span><span class="p">(</span><span class="nx">person</span><span class="p">,</span> <span class="kd">function</span><span class="p">..)</span> <span class="c1">// Sets owner_id</span>
+<span class="nx">animal</span><span class="p">.</span><span class="nx">hasOwner</span><span class="p">(</span><span class="kd">function</span><span class="p">..)</span>         <span class="c1">// Checks if owner exists</span>
+<span class="nx">animal</span><span class="p">.</span><span class="nx">removeOwner</span><span class="p">()</span>                <span class="c1">// Sets owner_id to 0</span>
+</pre></div>
+
+<p><strong>Reverse access</strong></p>
+
+<div class="highlight"><pre><span class="nx">Animal</span><span class="p">.</span><span class="nx">hasOne</span><span class="p">(</span><span class="s1">'owner'</span><span class="p">,</span> <span class="nx">Person</span><span class="p">,</span> <span class="p">{</span><span class="nx">reverse</span><span class="o">:</span> <span class="s1">'pets'</span><span class="p">})</span>
+</pre></div>
+
+<p>will add the following:</p>
+
+<div class="highlight"><pre><span class="nx">person</span><span class="p">.</span><span class="nx">getPets</span><span class="p">(</span><span class="kd">function</span><span class="p">..)</span>
+<span class="nx">person</span><span class="p">.</span><span class="nx">setPets</span><span class="p">(</span><span class="nx">cat</span><span class="p">,</span> <span class="kd">function</span><span class="p">..)</span>
+</pre></div>
+
+<h3>
+<a name="hasmany" class="anchor" href="#hasmany"><span class="octicon octicon-link"></span></a>hasMany</h3>
+
+<p>Is a <strong>many to many</strong> relationship (includes join table).<br>
+Eg: <code>Patient.hasMany('doctors', Doctor, { why: String }, { reverse: 'patients' })</code>.<br>
+Patient can have many different doctors. Each doctor can have many different patients.</p>
+
+<p>This will create a join table <code>patient_doctors</code> when you call <code>Patient.sync()</code>:</p>
+
+<table>
+<tr>
+<th align="left">column name</th>
+<th align="left">type</th>
+</tr>
+<tr>
+<td align="left">patient_id</td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left">doctor_id</td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left">why</td>
+<td align="left">varchar(255)</td>
+</tr>
+</table><p>The following functions will be available:</p>
+
+<div class="highlight"><pre><span class="nx">patient</span><span class="p">.</span><span class="nx">getDoctors</span><span class="p">(</span><span class="kd">function</span><span class="p">..)</span>           <span class="c1">// List of doctors</span>
+<span class="nx">patient</span><span class="p">.</span><span class="nx">addDoctors</span><span class="p">(</span><span class="nx">docs</span><span class="p">,</span> <span class="kd">function</span><span class="p">...)</span>    <span class="c1">// Adds entries to join table</span>
+<span class="nx">patient</span><span class="p">.</span><span class="nx">setDoctors</span><span class="p">(</span><span class="nx">docs</span><span class="p">,</span> <span class="kd">function</span><span class="p">...)</span>    <span class="c1">// Removes existing entries in join table, adds new ones</span>
+<span class="nx">patient</span><span class="p">.</span><span class="nx">hasDoctors</span><span class="p">(</span><span class="nx">docs</span><span class="p">,</span> <span class="kd">function</span><span class="p">...)</span>    <span class="c1">// Checks if patient is associated to specified doctors</span>
+<span class="nx">patient</span><span class="p">.</span><span class="nx">removeDoctors</span><span class="p">(</span><span class="nx">docs</span><span class="p">,</span> <span class="kd">function</span><span class="p">...)</span> <span class="c1">// Removes specified doctors from join table</span>
+
+<span class="nx">doctor</span><span class="p">.</span><span class="nx">getPatients</span><span class="p">(</span><span class="kd">function</span><span class="p">..)</span>
+<span class="nx">etc</span><span class="p">...</span>
+</pre></div>
+
+<p>To associate a doctor to a patient:</p>
+
+<div class="highlight"><pre><span class="nx">patient</span><span class="p">.</span><span class="nx">addDoctor</span><span class="p">(</span><span class="nx">surgeon</span><span class="p">,</span> <span class="p">{</span><span class="nx">why</span><span class="o">:</span> <span class="s2">"remove appendix"</span><span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span> <span class="p">)</span>
+</pre></div>
+
+<p>which will add <code>{patient_id: 4, doctor_id: 6, why: "remove appendix"}</code> to the join table.</p>
+
+<h3>
+<a name="examples--options" class="anchor" href="#examples--options"><span class="octicon octicon-link"></span></a>Examples &amp; options</h3>
+
+<p>If you have a relation of 1 to n, you should use <code>hasOne</code> (belongs to) association.</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
     <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
@@ -688,13 +904,13 @@ both sides.</li>
 <span class="kd">var</span> <span class="nx">Animal</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'animal'</span><span class="p">,</span> <span class="p">{</span>
     <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
 <span class="p">});</span>
-<span class="nx">Animal</span><span class="p">.</span><span class="nx">hasOne</span><span class="p">(</span><span class="s2">"owner"</span><span class="p">,</span> <span class="nx">Person</span><span class="p">);</span> <span class="c1">// assumes column 'owner_id' in 'animal' table</span>
+<span class="nx">Animal</span><span class="p">.</span><span class="nx">hasOne</span><span class="p">(</span><span class="s2">"owner"</span><span class="p">,</span> <span class="nx">Person</span><span class="p">);</span> <span class="c1">// creates column 'owner_id' in 'animal' table</span>
 
 <span class="c1">// get animal with id = 123</span>
-<span class="nx">Animal</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">Foo</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Foo is the animal model instance, if found</span>
-    <span class="nx">Foo</span><span class="p">.</span><span class="nx">getOwner</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">John</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// if Foo animal has really an owner, John points to it</span>
+<span class="nx">Animal</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">animal</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// animal is the animal model instance, if found</span>
+    <span class="nx">Foo</span><span class="p">.</span><span class="nx">getOwner</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">person</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// if animal has really an owner, person points to it</span>
     <span class="p">});</span>
 <span class="p">});</span>
 </pre></div>
@@ -709,23 +925,9 @@ both sides.</li>
 <div class="highlight"><pre><span class="nx">db</span><span class="p">.</span><span class="nx">settings</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"properties.association_key"</span><span class="p">,</span> <span class="s2">"id_{name}"</span><span class="p">);</span> <span class="c1">// {name} will be replaced by 'owner' in this case</span>
 </pre></div>
 
-<p><strong>Note: This has to be done prior to the association creation.</strong></p>
+<p><strong>Note: This has to be done before the association is specified.</strong></p>
 
-<p>For relations of 1 to many you have to use <code>hasMany</code> associations. This assumes the existence of a separate join table that has 2 columns, each referencing the table in the association. Ideally, these would be foreign key relationships in your database.</p>
-
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
-    <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
-<span class="p">});</span>
-<span class="nx">Person</span><span class="p">.</span><span class="nx">hasMany</span><span class="p">(</span><span class="s2">"friends"</span><span class="p">);</span> <span class="c1">// omitting the other Model, it will assume self model</span>
-
-<span class="nx">Person</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">John</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">John</span><span class="p">.</span><span class="nx">getFriends</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">friends</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// assumes table person_friends with columns person_id and friends_id</span>
-    <span class="p">});</span>
-<span class="p">});</span>
-</pre></div>
-
-<p>The <code>hasMany</code> associations can have additional properties that are assumed to be in the association table.</p>
+<p>The <code>hasMany</code> associations can have additional properties in the association table.</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
     <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
@@ -742,10 +944,11 @@ both sides.</li>
 <span class="p">});</span>
 </pre></div>
 
-<p>If you prefer you can activate <code>autoFetch</code>. This way associations are automatically fetched when you get or find instances of a model.</p>
+<p>If you prefer you can activate <code>autoFetch</code>.
+This way associations are automatically fetched when you get or find instances of a model.</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Person</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'person'</span><span class="p">,</span> <span class="p">{</span>
-    <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
+  <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
 <span class="p">});</span>
 <span class="nx">Person</span><span class="p">.</span><span class="nx">hasMany</span><span class="p">(</span><span class="s2">"friends"</span><span class="p">,</span> <span class="p">{</span>
     <span class="nx">rate</span> <span class="o">:</span> <span class="nb">Number</span>
@@ -793,8 +996,8 @@ Confusing? Look at the next example.</p>
 <span class="p">});</span>
 </pre></div>
 
-<p>This makes even more sense when having <code>hasMany</code> associations since you can manage the Many-to-Many associations
-from both sides.</p>
+<p>This makes even more sense when having <code>hasMany</code> associations since you can manage the <em>many to many</em>
+associations from both sides.</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Pet</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'pet'</span><span class="p">,</span> <span class="p">{</span>
     <span class="nx">name</span> <span class="o">:</span> <span class="nb">String</span>
