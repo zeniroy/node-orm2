@@ -171,9 +171,11 @@ assets public folder(s).</strong></p>
 </tr>
 <tr>
 <td align="left">sqlite</td>
-<td align="left"><code>"sqlite3" : "2.1.9"</code></td>
+<td align="left"><code>"sqlite3" : "2.1.7"</code></td>
 </tr>
-</table><h3>
+</table><p>These are the versions tested. Use others (older or newer) at your own risk.</p>
+
+<h3>
 <a name="options" class="anchor" href="#options"><span class="octicon octicon-link"></span></a>Options</h3>
 
 <p>You can pass in connection options either as a string:</p>
@@ -185,7 +187,7 @@ assets public folder(s).</strong></p>
 <span class="p">});</span>
 </pre></div>
 
-<p><strong>Note:</strong> <code>pool</code> is only supported by mysql &amp; postgres.</p>
+<p><strong>Note:</strong> <code>pool</code> is only supported by mysql &amp; postgres. When 'pool' is set to true, your database connections are cached so that connections can be reused, optimizing performance.</p>
 
 <p>Or as an object:</p>
 
