@@ -19,9 +19,9 @@ describe("hasOne", function() {
 			db.settings.set('instance.cache', false);
 			db.settings.set('instance.returnAllErrors', true);
 			Tree  = db.define("tree",   { type:   { type: 'text' } });
-			Stalk = db.define("stalk",  { length: { type: 'number', rational: false } });
+			Stalk = db.define("stalk",  { length: { type: 'integer' } });
 			Leaf  = db.define("leaf", {
-				size: { type: 'number', rational: false }
+				size: { type: 'integer' }
 			}, {
 				validations: opts.validations
 			});
@@ -226,6 +226,28 @@ describe("hasOne", function() {
 							should.equal(fetchedLeaf.treeId, leaf.treeId);
 
 							return done();
+						});
+					});
+				});
+
+				it("shouldn't cause an infinite loop when getting and saving with no changes", function (done) {
+					Leaf.get(leafId, function (err, leaf) {
+						should.not.exist(err);
+
+						leaf.save( function (err) {
+							should.not.exist(err);
+							done();
+						});
+					});
+				});
+
+				it("shouldn't cause an infinite loop when getting and saving with changes", function (done) {
+					Leaf.get(leafId, function (err, leaf) {
+						should.not.exist(err);
+
+						leaf.save({ size: 14 }, function (err) {
+							should.not.exist(err);
+							done();
 						});
 					});
 				});

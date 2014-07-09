@@ -1,6 +1,9 @@
+var _        = require('lodash');
 var should   = require('should');
 var helper   = require('../support/spec_helper');
+var common   = require('../common');
 var ORM      = require('../../');
+var protocol = common.protocol();
 
 describe("Model.get()", function() {
 	var db     = null;
@@ -10,7 +13,7 @@ describe("Model.get()", function() {
 	var setup = function (cache) {
 		return function (done) {
 			Person = db.define("person", {
-				name   : String
+				name   : { type: 'text', mapsTo: 'fullname' }
 			}, {
 				cache  : cache,
 				methods: {
@@ -46,6 +49,33 @@ describe("Model.get()", function() {
 
 	after(function () {
 		return db.close();
+	});
+
+	describe("mapsTo", function () {
+		if (protocol == 'mongodb') return;
+
+		before(setup(true));
+
+		it("should create the table with a different column name than property name", function (done) {
+			var sql;
+
+			if (protocol == 'sqlite') {
+				sql = "PRAGMA table_info(?)";
+			} else {
+				sql = "SELECT column_name FROM information_schema.columns WHERE table_name = ?";
+			}
+
+			db.driver.execQuery(sql, [Person.table], function (err, data) {
+				should.not.exist(err);
+
+				var names = _.pluck(data, protocol == 'sqlite' ? 'name' : 'column_name')
+
+				should.equal(typeof Person.properties.name, 'object');
+				should.notEqual(names.indexOf('fullname'), -1);
+
+				done();
+			});
+		});
 	});
 
 	describe("with cache", function () {
@@ -282,6 +312,8 @@ describe("Model.get()", function() {
 	});
 
 	describe("with a point property type", function() {
+		if (common.protocol() == 'sqlite' || common.protocol() == 'mongodb') return;
+
 		it("should deserialize the point to an array", function (done) {
 			db.settings.set('properties.primary_key', 'id');
 
@@ -292,11 +324,7 @@ describe("Model.get()", function() {
 
 			ORM.singleton.clear();
 
-			return helper.dropSync(Person, function (err) {
-				if (err) {
-					return done(); // not supported
-				}
-
+			return helper.dropSync(Person, function () {
 				Person.create({
 					name     : "John Doe",
 					location : { x : 51.5177, y : -0.0968 }

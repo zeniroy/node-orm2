@@ -6,6 +6,8 @@ describe("Model keys option", function() {
 	var db = null;
 
 	before(function (done) {
+		this.timeout(4000);
+
 		helper.connect(function (connection) {
 			db = connection;
 
@@ -53,6 +55,9 @@ describe("Model keys option", function() {
 
 		before(function (done) {
 			DoorAccessHistory = db.define("door_access_history", {
+				year   : { type: 'integer' },
+				month  : { type: 'integer' },
+				day    : { type: 'integer' },
 				user   : String,
 				action : [ "in", "out" ]
 			}, {
@@ -101,14 +106,6 @@ describe("Model keys option", function() {
 					});
 				});
 			})
-		});
-
-		it("should throw if defining hasMany association", function (done) {
-			(function () {
-				DoorAccessHistory.hasMany("...");
-			}).should.throw();
-
-			return done();
 		});
 	});
 });

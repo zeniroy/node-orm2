@@ -1,3 +1,4 @@
+var async    = require('async');
 var should   = require('should');
 var helper   = require('../support/spec_helper');
 var ORM      = require('../../');
@@ -6,31 +7,62 @@ var common   = require('../common');
 describe("Model.find() chaining", function() {
 	var db = null;
 	var Person = null;
+	var Dog = null;
 
-	var setup = function () {
+	var setup = function (extraOpts) {
+		if (!extraOpts) extraOpts = {};
+
 		return function (done) {
 			Person = db.define("person", {
 				name    : String,
 				surname : String,
 				age     : Number
-			});
+			}, extraOpts);
 			Person.hasMany("parents");
+			Person.hasOne("friend");
 
 			ORM.singleton.clear(); // clear cache
 
 			return helper.dropSync(Person, function () {
 				Person.create([{
-					name    : "John",
-					surname : "Doe",
-					age     : 18
+					name      : "John",
+					surname   : "Doe",
+					age       : 18,
+					friend_id : 1
 				}, {
-					name    : "Jane",
-					surname : "Doe",
-					age     : 20
+					name      : "Jane",
+					surname   : "Doe",
+					age       : 20,
+					friend_id : 1
 				}, {
-					name    : "Jane",
-					surname : "Dean",
-					age     : 18
+					name      : "Jane",
+					surname   : "Dean",
+					age       : 18,
+					friend_id : 1
+				}], done);
+			});
+		};
+	};
+
+	var setup2 = function () {
+		return function (done) {
+			Dog = db.define("dog", {
+				name: String,
+			});
+			Dog.hasMany("friends");
+			Dog.hasMany("family");
+
+			ORM.singleton.clear(); // clear cache
+
+			return helper.dropSync(Dog, function () {
+				Dog.create([{
+					name    : "Fido",
+					friends : [{ name: "Gunner" }, { name: "Chainsaw" }],
+					family  : [{ name: "Chester" }]
+				}, {
+					name    : "Thumper",
+					friends : [{ name: "Bambi" }],
+					family  : [{ name: "Princess" }, { name: "Butch" }]
 				}], done);
 			});
 		};
@@ -89,10 +121,10 @@ describe("Model.find() chaining", function() {
 		});
 	});
 
-	describe(".order('property')", function () {
+	describe("order", function () {
 		before(setup());
 
-		it("should order by that property ascending", function (done) {
+		it("('property') should order by that property ascending", function (done) {
 			Person.find().order("age").run(function (err, instances) {
 				should.equal(err, null);
 				instances.should.have.property("length", 3);
@@ -102,12 +134,8 @@ describe("Model.find() chaining", function() {
 				return done();
 			});
 		});
-	});
 
-	describe(".order('-property')", function () {
-		before(setup());
-
-		it("should order by that property descending", function (done) {
+		it("('-property') should order by that property descending", function (done) {
 			Person.find().order("-age").run(function (err, instances) {
 				should.equal(err, null);
 				instances.should.have.property("length", 3);
@@ -117,12 +145,8 @@ describe("Model.find() chaining", function() {
 				return done();
 			});
 		});
-	});
 
-	describe(".order('property', 'Z')", function () {
-		before(setup());
-
-		it("should order by that property descending", function (done) {
+		it("('property', 'Z') should order by that property descending", function (done) {
 			Person.find().order("age", "Z").run(function (err, instances) {
 				should.equal(err, null);
 				instances.should.have.property("length", 3);
@@ -134,11 +158,52 @@ describe("Model.find() chaining", function() {
 		});
 	});
 
-	describe(".only('property', ...)", function () {
+	describe("orderRaw", function () {
+		if (common.protocol() == 'mongodb') return;
+
 		before(setup());
 
-		it("should return only those properties, others null", function (done) {
+		it("should allow ordering by SQL", function (done) {
+			Person.find().orderRaw("age DESC").run(function (err, instances) {
+				should.equal(err, null);
+				instances.should.have.property("length", 3);
+				instances[0].age.should.equal(20);
+				instances[2].age.should.equal(18);
+
+				return done();
+			});
+		});
+
+		it("should allow ordering by SQL with escaping", function (done) {
+			Person.find().orderRaw("?? DESC", ['age']).run(function (err, instances) {
+				should.equal(err, null);
+				instances.should.have.property("length", 3);
+				instances[0].age.should.equal(20);
+				instances[2].age.should.equal(18);
+
+				return done();
+			});
+		});
+	});
+
+	describe("only", function () {
+		before(setup());
+
+		it("('property', ...) should return only those properties, others null", function (done) {
 			Person.find().only("age", "surname").order("-age").run(function (err, instances) {
+				should.equal(err, null);
+				instances.should.have.property("length", 3);
+				instances[0].should.have.property("age");
+				instances[0].should.have.property("surname", "Doe");
+				instances[0].should.have.property("name", null);
+
+				return done();
+			});
+		});
+
+		// This works if cache is disabled. I suspect a cache bug.
+		xit("(['property', ...]) should return only those properties, others null", function (done) {
+			Person.find().only([ "age", "surname" ]).order("-age").run(function (err, instances) {
 				should.equal(err, null);
 				instances.should.have.property("length", 3);
 				instances[0].should.have.property("age");
@@ -150,16 +215,32 @@ describe("Model.find() chaining", function() {
 		});
 	});
 
-	describe(".only('property1', ...)", function () {
+	describe("omit", function () {
 		before(setup());
 
-		it("should return only those properties, others null", function (done) {
-			Person.find().only([ "age", "surname" ]).order("-age").run(function (err, instances) {
+		it("('property', ...) should not get these properties", function (done) {
+			Person.find().omit("age", "surname").order("-age").run(function (err, instances) {
 				should.equal(err, null);
 				instances.should.have.property("length", 3);
-				instances[0].should.have.property("age");
-				instances[0].should.have.property("surname", "Doe");
-				instances[0].should.have.property("name", null);
+				if (common.protocol() != "mongodb") {
+					should.exist(instances[0].id);
+				}
+				should.exist(instances[0].friend_id);
+				instances[0].should.have.property("age", null);
+				instances[0].should.have.property("surname", null);
+				instances[0].should.have.property("name", "Jane");
+
+				return done();
+			});
+		});
+
+		it("(['property', ...]) should not get these properties", function (done) {
+			Person.find().omit(["age", "surname"]).order("-age").run(function (err, instances) {
+				should.equal(err, null);
+				instances.should.have.property("length", 3);
+				instances[0].should.have.property("age", null);
+				instances[0].should.have.property("surname", null);
+				instances[0].should.have.property("name", "Jane");
 
 				return done();
 			});
@@ -323,7 +404,15 @@ describe("Model.find() chaining", function() {
 	});
 
 	describe(".remove()", function () {
-		before(setup());
+		var hookFired = false;
+
+		before(setup({
+			hooks: {
+				beforeRemove: function () {
+					hookFired = true;
+				}
+			}
+		}));
 
 		it("should have no problems if no results found", function (done) {
 			Person.find({ age: 22 }).remove(function (err) {
@@ -339,9 +428,10 @@ describe("Model.find() chaining", function() {
 			});
 		});
 
-		it("should remove results and give feedback", function (done) {
+		it("should remove results without calling hooks", function (done) {
 			Person.find({ age: 20 }).remove(function (err) {
 				should.equal(err, null);
+				should.equal(hookFired, false);
 
 				Person.find().count(function (err, count) {
 					should.equal(err, null);
@@ -352,10 +442,19 @@ describe("Model.find() chaining", function() {
 				});
 			});
 		});
+
 	});
 
 	describe(".each()", function () {
-		before(setup());
+		var hookFired = false;
+
+		before(setup({
+			hooks: {
+				beforeRemove: function () {
+					hookFired = true;
+				}
+			}
+		}));
 
 		it("should return a ChainFind", function (done) {
 			var chain = Person.find({ age: 22 }).each();
@@ -431,6 +530,14 @@ describe("Model.find() chaining", function() {
 			});
 		});
 
+		// TODO: Implement
+		xit(".remove() should call hooks", function () {
+			Person.find().each().remove(function (err) {
+				should.not.exist(err);
+				should.equal(hookFired, true);
+			});
+		});
+
 		if (common.protocol() == "mongodb") return;
 
 		describe(".hasAccessor() for hasOne associations", function () {
@@ -458,6 +565,104 @@ describe("Model.find() chaining", function() {
 						});
 					});
 				});
+			});
+		});
+	});
+
+	describe(".eager()", function () {
+		before(setup2());
+
+		// TODO: Remove this code once the Mongo eager loading is implemented
+		var isMongo = function () {
+			if (db.driver.config.protocol == "mongodb:") {
+				(function () {
+					Dog.find().eager("friends").all(function () {
+						// Should not ever run.
+					});
+				}).should.throw();
+
+				return true;
+			}
+			return false;
+		};
+
+		it("should fetch all listed associations in a single query", function (done) {
+			if (isMongo()) { return done(); };
+
+			Dog.find({ name: ["Fido", "Thumper"] }).eager("friends").all(function (err, dogs) {
+				should.equal(err, null);
+
+				should(Array.isArray(dogs));
+
+				dogs.length.should.equal(2);
+
+				dogs[0].friends.length.should.equal(2);
+				dogs[1].friends.length.should.equal(1);
+				done();
+			});
+		});
+
+		it("should be able to handle multiple associations", function (done) {
+			if (isMongo()) { return done(); };
+
+			Dog.find({ name: ["Fido", "Thumper"] }).eager("friends", "family").all(function (err, dogs) {
+				should.equal(err, null);
+
+				should(Array.isArray(dogs));
+
+				dogs.length.should.equal(2);
+
+				dogs[0].friends.length.should.equal(2);
+				dogs[0].family.length.should.equal(1);
+				dogs[1].friends.length.should.equal(1);
+				dogs[1].family.length.should.equal(2);
+				done();
+			});
+		});
+
+		it("should work with array parameters too", function (done) {
+			if (isMongo()) { return done(); };
+
+			Dog.find({ name: ["Fido", "Thumper"] }).eager(["friends", "family"]).all(function (err, dogs) {
+				should.equal(err, null);
+
+				should(Array.isArray(dogs));
+
+				dogs.length.should.equal(2);
+
+				dogs[0].friends.length.should.equal(2);
+				dogs[0].family.length.should.equal(1);
+				dogs[1].friends.length.should.equal(1);
+				dogs[1].family.length.should.equal(2);
+				done();
+			});
+		});
+	});
+
+	describe(".success()", function () {
+		before(setup());
+
+		it("should return a Promise with .fail() method", function (done) {
+			Person.find().success(function (people) {
+				should(Array.isArray(people));
+
+				return done();
+			}).fail(function (err) {
+				// never called..
+			});
+		});
+	});
+
+	describe(".fail()", function () {
+		before(setup());
+
+		it("should return a Promise with .success() method", function (done) {
+			Person.find().fail(function (err) {
+				// never called..
+			}).success(function (people) {
+				should(Array.isArray(people));
+
+				return done();
 			});
 		});
 	});

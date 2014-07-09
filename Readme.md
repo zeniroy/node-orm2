@@ -1,7 +1,7 @@
 ## Object Relational Mapping
 
-[![Build Status](https://secure.travis-ci.org/dresende/node-orm2.png?branch=master)](http://travis-ci.org/dresende/node-orm2)
-[![](https://badge.fury.io/js/orm.png)](https://npmjs.org/package/orm)
+[![Build Status](https://api.travis-ci.org/dresende/node-orm2.svg?branch=master)](http://travis-ci.org/dresende/node-orm2)
+[![](https://badge.fury.io/js/orm.svg)](https://npmjs.org/package/orm)
 [![](https://gemnasium.com/dresende/node-orm2.png)](https://gemnasium.com/dresende/node-orm2)
 [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=dresende&url=https://github.com/dresende/node-orm2&title=ORM&language=&tags=github&category=software)
 
@@ -22,7 +22,7 @@ npm test
 
 ## DBMS Support
 
-- MySQL
+- MySQL & MariaDB
 - PostgreSQL
 - Amazon Redshift
 - SQLite
@@ -34,7 +34,7 @@ npm test
 - Create Model associations, find, check, create and remove
 - Define custom validations (several builtin validations, check instance properties before saving - see [enforce](http://github.com/dresende/node-enforce) for details)
 - Model instance caching and integrity (table rows fetched twice are the same object, changes to one change all)
-- Plugins: [MySQL FTS](http://dresende.github.io/node-orm-mysql-fts) , [Pagination](http://dresende.github.io/node-orm-paging) , [Transaction](http://dresende.github.io/node-orm-transaction), [Timestamps](http://github.com/SPARTAN563/node-orm-timestamps)
+- Plugins: [MySQL FTS](http://dresende.github.io/node-orm-mysql-fts) , [Pagination](http://dresende.github.io/node-orm-paging) , [Transaction](http://dresende.github.io/node-orm-transaction), [Timestamps](http://github.com/SPARTAN563/node-orm-timestamps), [Migrations](https://github.com/locomote/node-migrate-orm2)
 
 ## Introduction
 
@@ -51,7 +51,7 @@ orm.connect("mysql://username:password@host/database", function (err, db) {
 	var Person = db.define("person", {
 		name      : String,
 		surname   : String,
-		age       : Number,
+		age       : Number, // FLOAT
 		male      : Boolean,
 		continent : [ "Europe", "America", "Asia", "Africa", "Australia", "Antartica" ], // ENUM type
 		photo     : Buffer, // BLOB/BINARY
@@ -81,6 +81,11 @@ orm.connect("mysql://username:password@host/database", function (err, db) {
 });
 ```
 
+## Promises
+
+You can use the [promise enabled wrapper library](https://github.com/rafaelkaufmann/q-orm).
+
+
 ## Express
 
 If you're using Express, you might want to use the simple middleware to integrate more easily.
@@ -91,8 +96,9 @@ var orm = require('orm');
 var app = express();
 
 app.use(orm.express("mysql://username:password@host/database", {
-	define: function (db, models) {
+	define: function (db, models, next) {
 		models.person = db.define("person", { ... });
+		next();
 	}
 }));
 app.listen(80);
@@ -107,85 +113,21 @@ You can call `orm.express` more than once to have multiple database connections.
 will be joined together in `req.models`. **Don't forget to use it before `app.use(app.router)`, preferably right after your
 assets public folder(s).**
 
+## Examples
+
+See `examples/anontxt` for an example express based app.
+
+## Documentation
+
+Documentation is moving to the [wiki](https://github.com/dresende/node-orm2/wiki/).
+
 ## Settings
 
-Settings are used to store key value pairs. A settings object is stored on the global orm object and on each database connection.
-
-```js
-var orm = require("orm");
-
-orm.settings.set("some.deep.value", 123);
-
-orm.connect("....", function (err, db) {
-	// db.settings is a snapshot of the settings at the moment
-	// of orm.connect(). changes to it don't affect orm.settings
-
-	console.log(db.settings.get("some.deep.value")); // 123
-	console.log(db.settings.get("some.deep"));       // { value: 123 }
-});
-```
-More in the [wiki](https://github.com/dresende/node-orm2/wiki/Settings).
+See information in the [wiki](https://github.com/dresende/node-orm2/wiki/Settings).
 
 ## Connecting
 
-First, add the correct driver to your `package.json`:
-
- driver                | npm package                | version
-:----------------------|:---------------------------|:-----
- mysql                 | mysql                      | 2.0.0-alpha7
- postgres<br/>redshift | pg                         | ~1.0.0
- sqlite                | sqlite3                    | 2.1.7
- mongodb               | mongodb                    | 1.3.11
-
-These are the versions tested. Use others (older or newer) at your own risk.
-
-### Options
-
-You can pass in connection options either as a string:
-
-```js
-var orm = require("orm");
-
-orm.connect("mysql://username:password@host/database?pool=true", function (err, db) {
-	// ...
-});
-```
-
-**Note:** `pool` is only supported by mysql & postgres. When 'pool' is set to true, your database connections are cached so that connections can be reused, optimizing performance.
-
-**Note:** `strdates` is only supported by sqlite. When true, date fields are saved as strings, compatible with django
-
-Or as an object:
-
-```js
-var opts = {
-  database : "dbname",
-  protocol : "[mysql|postgres|redshift|sqlite]",
-  host     : "127.0.0.1",
-  port     : 3306,         // optional, defaults to database default
-  user     : "..",
-  password : "..",
-  query    : {
-    pool     : true|false,   // optional, false by default
-    debug    : true|false,   // optional, false by default
-    strdates : true|false    // optional, false by default
-  }
-};
-orm.connect(opts, function (err, db) {
-	// ...
-});
-```
-
-You can also avoid passing a callback and just listen for the connect event:
-
-```js
-var orm = require("orm");
-var db  = orm.connect("mysql://username:password@host/database");
-
-db.on("connect", function (err, db) {
-	// ...
-});
-```
+See information in the [wiki](https://github.com/dresende/node-orm2/wiki/Connecting-to-Database).
 
 ## Models
 
@@ -195,50 +137,11 @@ Models support behaviours for accessing and manipulating table data.
 
 ## Defining Models
 
-Call `define` on the database connection to setup a model. The name of the table and model is used as an identifier for the model on the database connection, so you can easily access the model later using the connection.
-
-```js
-var Person = db.define('person', {        // 'person' will be the table in the database as well as the model id
-	// properties
-	name    : String,                     // you can use native objects to define the property type
-	surname : { type: "text", size: 50 }  // or you can be specific and define aditional options
-}, {
-	// options (optional)
-});
-```
+See information in the [wiki](https://github.com/dresende/node-orm2/wiki/Defining-Models).
 
 ### Properties
 
-#### Types
-
-
- Native   | String     | Native   | String
- :--------|:-----------|:---------|:---------
- String   | 'text'     | Date     | 'date '
- Number   | 'number'   | Object   | 'object'
- Boolean  | 'boolean'  | Buffer   | 'binary'
-          |            |  ---     | 'enum'
-
-#### Options
-
-##### [all types]
-* `required`: true marks the column as `NOT NULL`, false (default)
-* `unique`: true marks the column with a `UNIQUE` index
-* `defaultValue`: sets the default value for the field
-
-##### string
-* `size`: max length of the string
-* `big`: true to make (LONG)TEXT columns instead of VARCHAR(size)
-
-##### number
-* `rational`: true (default) creates a FLOAT/REAL, false an INTEGER
-* `size`: byte size of number, default is 4. Note that 8 byte numbers [have limitations](http://stackoverflow.com/questions/307179/what-is-javascripts-max-int-whats-the-highest-integer-value-a-number-can-go-t)
-* `unsigned`: true to make INTEGER unsigned, default is false
-
-##### date
-* `time`: true (default) creates a DATETIME/TIMESTAMP, false a DATE
-
-Note that these may vary accross drivers.
+See information in the [wiki](https://github.com/dresende/node-orm2/wiki/Model-Properties).
 
 ### Instance Methods
 
@@ -268,7 +171,7 @@ Are defined directly on the model.
 ```js
 var Person = db.define('person', {
     name    : String,
-    height  : { type: 'number', rational: false }
+    height  : { type: 'integer' }
 });
 Person.tallerThan = function(height, callback) {
     this.find({ height: orm.gt(height) }, callback);
@@ -319,40 +222,26 @@ module.exports = function (db, cb) {
 
 ## Synchronizing Models
 
-Models can create their underlying tables in the database. You may call Model.sync() on each Model to create the underlying table or you can call db.sync() at a connection level to create all tables for all models.
-
-```js
-// db.sync() can also be used
-Person.sync(function (err) {
-	!err && console.log("done!");
-});
-```
+See information in the [wiki](https://github.com/dresende/node-orm2/wiki/Synching-and-Dropping-Models).
 
 ## Dropping Models
 
-If you want to drop a Model and remove all tables you can use the `.drop()` method.
-
-```js
-Person.drop(function (err) {
-	!err && console.log("person model no longer exists!");
-});
-```
+See information in the [wiki](https://github.com/dresende/node-orm2/wiki/Synching-and-Dropping-Models).
 
 ## Advanced Options
 
 ORM2 allows you some advanced tweaks on your Model definitions. You can configure these via settings or in the call to `define` when you setup the Model.
 
-For example, each Model instance has a unique ID in the database. This table column is
-by default "id" but you can change it.
+For example, each Model instance has a unique ID in the database. This table column is added automatically, and called "id" by default.<br/>
+If you define your own `key: true` column, "id" will not be added:
 
 ```js
 var Person = db.define("person", {
-	name : String
-}, {
-	id   : "person_id"
+	personId : { type: 'serial', key: true },
+	name     : String
 });
 
-// or just do it globally..
+// You can also change the default "id" property name globally:
 db.settings.set("properties.primary_key", "UID");
 
 // ..and then define your Models
@@ -363,14 +252,12 @@ var Pet = db.define("pet", {
 
 **Pet** model will have 2 columns, an `UID` and a `name`.
 
-It is also possible to have multiple IDs for a model in the database, this is done by specifying an array of IDs to use.
+It's also possible to have composite keys:
 
 ```js
 var Person = db.define("person", {
-	firstname: String,
-	lastname: String
-}, {
-	id: ['firstname', 'lastname']
+	firstname : { type: 'string', key: true },
+	lastname  : { type: 'string', key: true }
 });
 ```
 
@@ -384,44 +271,7 @@ Other options:
 
 ## Hooks
 
-If you want to listen for a type of event than occurs in instances of a Model, you can attach a function that
-will be called when that event happens.
-
-Currently the following events are supported:
-
-- `afterLoad` : (no parameters) Right after loading and preparing an instance to be used;
-- `afterAutoFetch` : (no parameters) Right after auto-fetching associations (if any), it will trigger regardless of having associations or not;
-- `beforeSave` : (no parameters) Right before trying to save;
-- `afterSave` : (bool success) Right after saving;
-- `beforeCreate` : (no parameters) Right before trying to save a new instance (prior to `beforeSave`);
-- `afterCreate` : (bool success) Right after saving a new instance;
-- `beforeRemove` : (no parameters) Right before trying to remove an instance;
-- `afterRemove` : (bool success) Right after removing an instance;
-- `beforeValidation` : (no parameters) Before all validations and prior to `beforeCreate` and `beforeSave`;
-
-All hook function are called with `this` as the instance so you can access anything you want related to it.
-
-For all `before*` hooks, you can add an additional parameter to the hook function. This parameter will be a function that
-must be called to tell if the hook allows the execution to continue or to break. You might be familiar with this workflow
-already from Express. Here's an example:
-
-```js
-var Person = db.define("person", {
-	name    : String,
-	surname : String
-}, {
-	hooks: {
-		beforeCreate: function (next) {
-			if (this.surname == "Doe") {
-				return next(new Error("No Does allowed"));
-			}
-			return next();
-		}
-	}
-});
-```
-
-This workflow allows you to make asynchronous work before calling `next`.
+See information in the [wiki](https://github.com/dresende/node-orm2/wiki/Model-Hooks).
 
 ## Finding Items
 
@@ -535,6 +385,7 @@ Person.find({ surname: "Doe" }).limit(3).offset(2).only("name", "surname").run(f
     // returning only 'name' and 'surname' properties
 });
 ```
+If you want to skip just one or two properties, you can call `.omit()` instead of `.only`.
 
 Chaining allows for more complicated queries. For example, we can search by specifying custom SQL:
 ```js
@@ -543,6 +394,13 @@ Person.find({ age: 18 }).where("LOWER(surname) LIKE ?", ['dea%']).all( ... );
 It's bad practice to manually escape SQL parameters as it's error prone and exposes your application to SQL injection.
 The `?` syntax takes care of escaping for you, by safely substituting the question mark in the query with the parameters provided.
 You can also chain multiple `where` clauses as needed.
+
+You can also `order` or `orderRaw`:
+```js
+Person.find({ age: 18 }).order('-name').all( ... );
+// see the 'Raw queries' section below for more details
+Person.find({ age: 18 }).orderRaw("?? DESC", ['age']).all( ... );
+```
 
 You can also chain and just get the count in the end. In this case, offset, limit and order are ignored.
 
@@ -553,6 +411,7 @@ Person.find({ surname: "Doe" }).count(function (err, people) {
 ```
 
 Also available is the option to remove the selected items.
+Note that a chained remove will not run any hooks.
 
 ```js
 Person.find({ surname: "Doe" }).remove(function (err) {
@@ -614,6 +473,28 @@ a few examples to describe it:
 { col1: orm.between(123, 456) } // `col1` BETWEEN 123 AND 456
 { col1: orm.not_between(123, 456) } // `col1` NOT BETWEEN 123 AND 456
 { col1: orm.like(12 + "%") } // `col1` like '12%'
+```
+
+#### Raw queries
+
+```js
+db.driver.execQuery("SELECT id, email FROM user", function (err, data) { ... })
+
+// You can escape identifiers and values.
+// For identifier substitution use: ??
+// For value substitution use: ?
+db.driver.execQuery(
+  "SELECT user.??, user.?? FROM user WHERE user.?? LIKE ? AND user.?? > ?",
+  ['id', 'name', 'name', 'john', 'id', 55],
+  function (err, data) { ... }
+)
+
+// Identifiers don't need to be scaped most of the time
+db.driver.execQuery(
+  "SELECT user.id, user.name FROM user WHERE user.name LIKE ? AND user.id > ?",
+  ['john', 55],
+  function (err, data) { ... }
+)
 ```
 
 ### Caching & Integrity
@@ -709,67 +590,7 @@ Person.get(1, function (err, John) {
 
 ## Validations
 
-The module [Enforce](http://github.com/dresende/node-enforce) is used for validations. For people using previous validators,
-they're still present, some as links to enforce, others not. We advise you to start using `orm.enforce` instead of `orm.validators`.
-For a list of possible validations, consult the [module](http://github.com/dresende/node-enforce).
-
-You can define validations for every property of a Model. You can have one or more validations for each property.
-You can also use the predefined validations or create your own.
-
-```js
-var Person = db.define("person", {
-	name : String,
-	age  : Number
-}, {
-	validations : {
-		name : orm.enforce.ranges.length(1, undefined, "missing"), // "missing" is a name given to this validation, instead of default
-		age  : [ orm.enforce.ranges.number(0, 10), orm.enforce.lists.inside([ 1, 3, 5, 7, 9 ]) ]
-	}
-});
-```
-
-The code above defines that the `name` length must be between 1 and undefined (undefined means any) and `age`
-must be a number between 0 and 10 (inclusive) but also one of the listed values. The example might not make sense
-but you get the point.
-
-When saving an item, if it fails to validate any of the defined validations you'll get an `error` object with the property
-name and validation error description. This description should help you identify what happened.
-
-```js
-var John = new Person({
-	name : "",
-	age : 20
-});
-John.save(function (err) {
-	// err.field = "name" , err.value = "" , err.msg = "missing"
-});
-```
-
-The validation stops after the first validation error. If you want it to validate every property and return all validation
-errors, you can change this behavior on global or local settings:
-
-```js
-var orm = require("orm");
-
-orm.settings.set("instance.returnAllErrors", true); // global or..
-
-orm.connect("....", function (err, db) {
-	db.settings.set("instance.returnAllErrors", true); // .. local
-
-	// ...
-
-	var John = new Person({
-		name : "",
-		age : 15
-	});
-	John.save(function (err) {
-		assert(Array.isArray(err));
-		// err[0].property = "name" , err[0].value = "" , err[0].msg = "missing"
-		// err[1].property = "age"  , err[1].value = 15 , err[1].msg = "out-of-range-number"
-		// err[2].property = "age"  , err[2].value = 15 , err[2].msg = "outside-list"
-	});
-});
-```
+See information in the [wiki](https://github.com/dresende/node-orm2/wiki/Model-Validations).
 
 ## Associations
 
@@ -790,6 +611,14 @@ animal.hasOwner(function..)         // Checks if owner exists
 animal.removeOwner()                // Sets owner_id to 0
 ```
 
+**Chain Find**
+
+The hasOne association is also chain find compatible. Using the example above, we can do this to access a new instance of a ChainFind object:
+
+```js
+Animal.findByOwner({ /* options */ })
+```
+
 **Reverse access**
 
 ```js
@@ -799,22 +628,26 @@ Animal.hasOne('owner', Person, {reverse: 'pets'})
 will add the following:
 
 ```js
+// Instance methods
 person.getPets(function..)
 person.setPets(cat, function..)
+
+// Model methods
+Person.findByPets({ /* options */ }) // returns ChainFind object
 ```
 
 ### hasMany
 
 Is a **many to many** relationship (includes join table).<br/>
-Eg: `Patient.hasMany('doctors', Doctor, { why: String }, { reverse: 'patients' })`.<br/>
+Eg: `Patient.hasMany('doctors', Doctor, { why: String }, { reverse: 'patients', key: true })`.<br/>
 Patient can have many different doctors. Each doctor can have many different patients.
 
 This will create a join table `patient_doctors` when you call `Patient.sync()`:
 
  column name | type
  :-----------|:--------
- patient_id  | Integer
- doctor_id   | Integer
+ patient_id  | Integer (composite key)
+ doctor_id   | Integer (composite key)
  why         | varchar(255)
 
 The following functions will be available:
@@ -828,6 +661,10 @@ patient.removeDoctors(docs, function...) // Removes specified doctors from join 
 
 doctor.getPatients(function..)
 etc...
+
+// You can also do:
+patient.doctors = [doc1, doc2];
+patient.save(...)
 ```
 
 To associate a doctor to a patient:
@@ -915,7 +752,7 @@ var Person = db.define('person', {
 });
 Person.hasMany("friends", {
     rate : Number
-});
+}, {}, { key: true });
 
 Person.get(123, function (err, John) {
     John.getFriends(function (err, friends) {
@@ -935,6 +772,7 @@ var Person = db.define('person', {
 Person.hasMany("friends", {
     rate : Number
 }, {
+    key       : true, // Turns the foreign keys in the join table into a composite key
     autoFetch : true
 });
 
@@ -953,6 +791,8 @@ var Person = db.define('person', {
 });
 Person.hasMany("friends", {
     rate : Number
+}, {
+  key: true
 });
 ```
 
@@ -993,9 +833,21 @@ var Person = db.define('person', {
 Person.hasMany("pets", Pet, {
     bought  : Date
 }, {
+    key     : true,
     reverse : "owners"
 });
 
 Person(1).getPets(...);
 Pet(2).getOwners(...);
 ```
+
+## Adding external database adapters
+
+To add an external database adapter to `orm`, call the `addAdapter` method, passing in the alias to use for connecting 
+with this adapter, along with the constructor for the adapter:
+
+```js
+require('orm').addAdapter('cassandra', CassandraAdapter);
+```
+
+See [the documentation for creating adapters](./Adapters.md) for more details.

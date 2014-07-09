@@ -1,3 +1,146 @@
+### v2.1.15 - 05 Jun 2014
+- Feature: Enable plugging in custom third-party drivers (now known as adapters) (#512)
+- Add Instance.set() so that properties of type object can have their properties set and mark model as dirty (#517)
+- Add Instance.markAsDirty(propName) to force a properties state to dirty/changed.
+- Enable Property.mapsTo for keys (#509)
+- Fix hasMany join tables with custom key columns (#510)
+
+### v2.1.14 - 22 May 2014
+- Allow explicitly specifying `key: true` on properties rather than passing in an array of ids.
+- Fix Property.mapsTo (#506)
+
+### v2.1.13 - 21 May 2014
+- Dont modify array passed to execQuery
+
+### v2.1.12 - 20 May 2014
+- Add custom-type support to hasMany extra properties.
+- Fix SQLite index name collisions (#499)
+
+### v2.1.11 - 19 May 2014
+- Fix hasMany.getAccessor().count()
+
+### v2.1.10 - 09 May 2014
+- Fix sqlite Dialect.clear - resets incremental counters (#497)
+
+### v2.1.9 - 06 May 2014
+- Add basic PostGIS support - (#456, #375)
+- Allow mapping model properties to differently named columns (#273, #495)
+
+### v2.1.8 - 28 Apr 2014
+- Fix '.omit' (#491)
+
+### v2.1.7 - 25 Apr 2014
+- Add explicit 'integer' type to avoid confusion.
+  `type: 'number', rational: false` will auto convert to `type: 'integer'`.
+
+### v2.1.6 - 23 Apr 2014
+- Add '.omit' to chain find - opposite of '.only'
+
+### v2.1.5 - 08 Apr 2014
+- Don't create indexes for primary/composite keys; they are created automatically (#484)
+
+### v2.1.4 - 19 Mar 2014
+- Fix TypeScript module declaration (#362)
+- Fixes reversed hasOne.getAccessor when called without callback (#267)
+- Fixes default pool value (#366)
+- Fixes erroneous misformatting of top-level $and/$or clauses (#365)
+- Fix and improve TypeScript declaration (#369)
+- Use local as default timezone, pass timezone option to Query (#325)
+- Postgres: always save object as Buffer (#378)
+- Postgres: fix queries for prop create index, and for primary keys (#377)
+- Typo in property definition (#382)
+- Implement eager loading - huge performance win (#393)
+- Make model methods defined by `defineProperty` writable so they can be mocked (#399)
+- Allow composite keys when calling remove. (#345, #358)
+- Fixed bug on like expression using MongoDB (#403)
+- Fixes pool and debug settings always true (#405)
+- Update express middleware for express.io (#413)
+- Allow HasMany.setAccessor to take an empty array
+- Fix DML if object value is null, JSON.stringify return string 'null' (#380)
+- Correct sqlite log statement (#452)
+- Make association methods writable so they can be mocked (#451)
+- Throw ORM errors rather than generic ones (#455)
+- Fix sqlite3 driver with config object on windows (#461)
+- Fix 'No associations defined' error (#398)
+- Don't modify connection object (#469)
+- Don't fire afterSave hooks when calling save with no changes (#457)
+- Fix reverse has one association findBy* (#450)
+- Auto cast hasMany extra properties with types like 'Object' (#466)
+- Add example full featured express app - AnonTXT
+
+### v2.1.3 - 14 Oct 2013
+
+- Fixes connection strings being parsed by url module to don't forget about port :) (#355)
+- Fixes tests common.getConnectionString to use common.getConfig
+- Converts indentation from spaces:2 to tabs
+- Removes unnecessary path requirement in ORM.js
+- Changes user methods to be writeable property instances (fixes #296)
+- Fixes afterAutoFetch next(err) bubling up just like afterLoad (#301)
+- Fixes cache for hasOne associations (#339)
+- Adds findByAssociation to extendsTo (#314)
+- Fixes Model.extendsTo autoFetch not working (throwing) (#323)
+- Adds hasMany hooks.beforeSave (#324)
+
+### v2.1.2 - 16 Sep 2013
+
+- Fixes stack overflow on instance.save() with a reversed hasOne association (#338)
+- Reverts should dev dependency to 1.2.2 (newer version was causing problems)
+- When using postgres you can now use pg@2.6.2 (unless when connecting to Heroku - use 2.5.0)
+
+### v2.1.1 - 13 Sep 2013
+
+- Add TypeScript interface
+- Allow custom join tables (#276)
+- Fixes stack overflow when saving auto-fetched model with relations (#279)
+- Unique validator can be scoped and case insensitive (#288)
+- Allow async express middleware (#291)
+- Allow finding by associations (#293)
+- Fix sqlite find with boolean (#292)
+- Fix `afterLoad` hook error handling (#301)
+- Allow auto-escaping for custom queries (#304)
+- Add support for custom property types (#305)
+- Allow ordering by raw sql - .orderRaw() when chaining (#308, #311)
+- Fix saving Instance.extra fields (#312)
+- Fix `NaN` handling (#310)
+- Fix incorrect SQL query (#313)
+- Deprecated `PARAM_MISSMATCH` ErrorCode in favour of correctly spelt `PARAM_MISMATCH` (#315)
+- Add promises to query chain (#316)
+- Adds a test for hasMany.delAccessor with arguments switched (#320)
+- Allow passing timezone in database connection string, local timezone is now default (#325, #303)
+- Adds ability to call db.load() with multiple files (closes #329)
+- For mysql driver, when using pool, use con.release() instead of con.end() (if defined) (closes #335)
+- Passes error from afterLoad hook to ready event
+- Most errors now have a model property
+- Adds connection.pool and connection.debug settings
+- Fixes throw when calling ChainFind.first() or .last() and it has an error
+- Removes upper limit on VARCHAR column size
+- Allows multi-key models to support hasMany
+
+### v2.1.0 - 3 Aug 2013
+
+- Adds License (MIT) file (closes #271)
+- Make Model.get respect Model autoFetch default value (#277)
+- Changes the way ":" is added to sqlite db paths (#270)
+- Fixes duplicated debug lines for postgres (#258)
+- Fixes not saving associations if no changes (other than associations) are made (#256)
+- Fixes autoFetch being discarded in Model.get options (closes #266)
+- Adds beforeDefine to plugins (#263)
+- Allows user to pass an object to extendsTo.setAccessor instead of an instance (detected via #250)
+- Changes autoFetch to avoid autofetching if instance is not saved (it's new!) (#242)
+- Changes validations and predefined validators to use enforce@0.1.1
+- Adds support for setting properties.association_key to be a function (name, field)
+- Passes connection settings to database drivers
+- Creates initial mongodb driver and 'mongo' driver alias
+- Allow querying chainfind with sql conditions
+- Allow passing extra options to extended models
+- Allow big text fields
+- Allow before* hooks to modify the instance
+- Fixes #226 - hasOne delAccessor not working
+- Adds Utilities.getRealPath to look for the real path to load based on the file where it was called from (for db.load and db.use)
+- Fixes Model.aggregate().call() to accept no arguments except function name
+- Fix problem with extendsTo and custom key types
+- Better association typing and multikey support
+
 ### v2.0.15 - 10 July 2013
 
 - Support for 'point' type as a property (#221)
